@@ -36,3 +36,52 @@
 *   Initial confusion regarding the timing/necessity of `db.use()`. Resolved by providing NS/DB directly in `connect` options.
 *   `db.select()`, `db.update()`, and `db.delete()` require a `RecordId` instance (not a string) when targeting a specific record ID, despite some documentation examples showing strings. Passing the `table:id` string resulted in unexpected behavior (`[]` return or incorrect results).
 *   Handlers for `select` and `delete` need to check for empty/null results when a record is not found to avoid client-side validation errors.
+
+## Future Tool Implementation Analysis
+
+Based on the [JavaScript SDK Methods documentation](https://surrealdb.com/docs/sdk/javascript/methods):
+
+**Legend:**
+*   `[x]` - Completed & Implemented as MCP Tool
+*   `[ ]` - To Do (Recommended Next)
+*   `[?]` - Might Do (Lower Priority / Optional)
+*   `[-]` - Won't Do (Internal/Admin/Auth/Live/Params)
+
+**Checklist:**
+
+**Initialization methods**
+*   `[-]` `db.connect(url, options)`
+*   `[-]` `db.close()`
+*   `[-]` `db.use(namespace,database)`
+*   `[-]` `db.let(key,val)`
+*   `[-]` `db.unset(key)`
+
+**Query methods**
+*   `[x]` `db.query<T>(sql,vars)`
+*   `[x]` `db.select<T>(thing)`
+*   `[-]` `db.live<T>(table, callback,diff)`
+*   `[-]` `db.subscribeLive<T>(queryUuid,callback)`
+*   `[-]` `db.kill(queryUuid)`
+
+**Export and Import methods**
+*   `[-]` `db.export()`
+*   `[-]` `db.import()`
+
+**Mutation methods**
+*   `[x]` `db.create<T,U>(thing,data)`
+*   `[?]` `db.insert<T,U>(thing,data)` - *For bulk inserts.*
+*   `[?]` `db.insertRelation<T,U>(thing,data)` - *For graph relations.*
+*   `[x]` `db.update<T,U>(thing,data)`
+*   `[ ]` `db.upsert<T,U>(thing,data)` - *Recommended next.*
+*   `[ ]` `db.merge<T,U>(thing,data)` - *Recommended next.*
+*   `[ ]` `db.patch<T,U>(thing,data)` - *Recommended next.*
+*   `[x]` `db.delete<T,U>(thing)`
+
+**Authentication methods**
+*   `[-]` `db.signup(vars)`
+*   `[-]` `db.signin(vars)`
+*   `[-]` `db.invalidate()`
+*   `[-]` `db.authenticate(token)`
+*   `[-]` `db.info<T>()`
+
+**Recommendation:** Implement `merge`, `patch`, and `upsert` next for more flexible data modification. `insert` could follow if bulk creation is needed.
