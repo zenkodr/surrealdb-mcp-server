@@ -20,19 +20,20 @@
 *   **Seventh Tool (`patch`):** Implemented the `patch` tool in `src/index.ts` using `db.patch()`. Confirmed need for `RecordId`. Tested successfully with multiple patch operations.
 *   **Eighth Tool (`upsert`):** Implemented the `upsert` tool in `src/index.ts` using `db.upsert()`. Confirmed need for `RecordId`. Tested successfully for both create and update scenarios.
 *   **Ninth Tool (`insert`):** Implemented the `insert` tool in `src/index.ts` using `db.insert()`. Tested successfully for inserting multiple records.
+*   **Tenth Tool (`insertRelation`):** Implemented the `insertRelation` tool in `src/index.ts` using `db.insertRelation()`. Corrected initial implementation based on documentation. Tested successfully.
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 2 - MCP Server)
 
 1.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging throughout the server.
 2.  **Testing:** Add more thorough tests for all tools, covering edge cases.
-3.  **(Optional) Implement More Tools:** Consider adding tools for `merge`, `patch`, `relate`, etc. if needed.
+3.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
 
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
-*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) and additional mutation tools (`merge`, `patch`, `upsert`, `insert`) are implemented and tested. Credential refactoring complete.
-*   Server provides a comprehensive baseline of common SurrealDB operations. Ready for next steps: improving robustness or adding optional tools like `insertRelation`.
+*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) and additional mutation/relation tools (`merge`, `patch`, `upsert`, `insert`, `insertRelation`) are implemented and tested. Credential refactoring complete.
+*   Server provides a comprehensive baseline of common SurrealDB operations. Ready for next steps: improving robustness or adding more tests.
 
 ## Known Issues
 
@@ -74,7 +75,7 @@ Based on the [JavaScript SDK Methods documentation](https://surrealdb.com/docs/s
 **Mutation methods**
 *   `[x]` `db.create<T,U>(thing,data)`
 *   `[x]` `db.insert<T,U>(thing,data)` - *For bulk inserts.*
-*   `[?]` `db.insertRelation<T,U>(thing,data)` - *For graph relations.*
+*   `[x]` `db.insertRelation<T,U>(thing,data)` - *For graph relations.*
 *   `[x]` `db.update<T,U>(thing,data)`
 *   `[x]` `db.upsert<T,U>(thing,data)`
 *   `[x]` `db.merge<T,U>(thing,data)`

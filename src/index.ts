@@ -238,6 +238,33 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["table", "data"]
         }
+      },
+      {
+        name: "insertRelation",
+        description: "Create a graph relation (edge) between two records.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            from_thing: {
+              type: "string",
+              description: "The full record ID of the 'from' record (e.g., 'user:john')."
+            },
+            relation_name: {
+              type: "string",
+              description: "The name of the relation/edge table (e.g., 'likes')."
+            },
+            to_thing: {
+              type: "string",
+              description: "The full record ID of the 'to' record (e.g., 'product:apple')."
+            },
+            data: {
+              type: "object",
+              description: "Optional: An object containing data for the relation itself.",
+              additionalProperties: true
+            }
+          },
+          required: ["from_thing", "relation_name", "to_thing"]
+        }
       }
     ]
   };
@@ -632,6 +659,66 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `SurrealDB insert failed for table ${table}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "insertRelation": {
+      // Validate input arguments
+      const fromThing = request.params.arguments?.from_thing;
+      const relationName = request.params.arguments?.relation_name;
+      const toThing = request.params.arguments?.to_thing;
+      const data = request.params.arguments?.data; // Optional
+
+      if (typeof fromThing !== 'string' || !fromThing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'from_thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      if (typeof relationName !== 'string' || !relationName.trim()) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'relation_name' argument.");
+      }
+      if (typeof toThing !== 'string' || !toThing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'to_thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      if (data !== undefined && (typeof data !== 'object' || data === null || Array.isArray(data))) {
+        throw new McpError(ErrorCode.InvalidParams, "Invalid 'data' argument. Must be an object if provided.");
+      }
+
+      // Parse record IDs
+      const [fromTable, fromIdPart] = fromThing.split(':');
+      const [toTable, toIdPart] = toThing.split(':');
+      if (!fromTable || !fromIdPart || !toTable || !toIdPart) {
+          throw new McpError(ErrorCode.InvalidParams, "Invalid 'from_thing' or 'to_thing' format. Must be 'table:id'.");
+      }
+      const fromRecordId = new RecordId(fromTable, fromIdPart);
+      const toRecordId = new RecordId(toTable, toIdPart);
+
+      // Construct the data object for the relation record
+      const relationData = {
+        in: fromRecordId,
+        out: toRecordId,
+        ...(data as { [key: string]: unknown } | undefined) // Spread optional data
+      };
+
+      try {
+        console.log(`Executing insertRelation tool: ${fromThing} -> ${relationName} -> ${toThing}`);
+        // Execute the insertRelation using the globally connected db instance
+        // Pass the relation table name and the constructed data object
+        const result = await db.insertRelation(relationName, relationData);
+        console.log(`insertRelation executed successfully.`);
+
+        // Return the created relation record(s) (db.insertRelation returns an array)
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}): ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB insertRelation failed: ${e instanceof Error ? e.message : String(e)}`
         );
       }
     }
