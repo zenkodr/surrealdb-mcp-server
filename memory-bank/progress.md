@@ -34,6 +34,10 @@
 *   **Code Quality Improvements:**
     *   Fixed code duplication in `src/index.ts`.
     *   Decided on input validation approach (relying on SurrealDB's validation).
+    *   Updated ESLint configuration to use the new ESLint v9.0.0+ format (`eslint.config.js`).
+    *   Fixed linting issues (removed unused imports, added appropriate ESLint disable comments).
+    *   Ran formatter and linter to ensure code quality.
+*   **Post-Change Testing:** Manually tested all core tools (`query`, `create`, `select`, `update`, `patch`, `delete`) after code changes to verify continued functionality.
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 3 - Testing & Finalization)

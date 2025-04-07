@@ -16,13 +16,13 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   ListToolsRequestSchema, // Added
-  CallToolRequestSchema,  // Added
-  McpError,               // Added
-  ErrorCode,              // Added
+  CallToolRequestSchema, // Added
+  McpError, // Added
+  ErrorCode, // Added
 } from "@modelcontextprotocol/sdk/types.js";
 
 // SurrealDB Import
-import { Surreal, RecordId } from 'surrealdb'; // Import RecordId
+import { Surreal, RecordId } from "surrealdb"; // Import RecordId
 
 // --- Database Configuration ---
 // Read configuration from environment variables provided by MCP host
@@ -35,7 +35,9 @@ const DB_PASS = process.env.SURREALDB_PASS;
 
 // Validate that all required environment variables are set
 if (!DB_ENDPOINT || !DB_NAMESPACE || !DB_DATABASE || !DB_USER || !DB_PASS) {
-  console.error("FATAL ERROR: Missing one or more required SurrealDB environment variables (SURREALDB_URL, SURREALDB_NS, SURREALDB_DB, SURREALDB_USER, SURREALDB_PASS)");
+  console.error(
+    "FATAL ERROR: Missing one or more required SurrealDB environment variables (SURREALDB_URL, SURREALDB_NS, SURREALDB_DB, SURREALDB_USER, SURREALDB_PASS)"
+  );
   process.exit(1);
 }
 
@@ -47,16 +49,16 @@ const db = new Surreal();
  * Capabilities will be added as tools are implemented.
  */
 const server = new Server(
-    {
-      // Name and version from package.json are used by default,
-      // but you can override them here if needed.
-      name: "surrealdb-mcp-server",
-      version: "0.1.0",
-    },
-    {
+  {
+    // Name and version from package.json are used by default,
+    // but you can override them here if needed.
+    name: "surrealdb-mcp-server",
+    version: "0.1.0",
+  },
+  {
     // Declare tool capability
     capabilities: {
-      tools: {} // This enables tool-related handlers like ListTools and CallTool
+      tools: {}, // This enables tool-related handlers like ListTools and CallTool
     },
   }
 );
@@ -69,35 +71,38 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "query",
-        description: "Execute a raw SurrealQL query against the connected database.",
+        description:
+          "Execute a raw SurrealQL query against the connected database.",
         inputSchema: {
           type: "object",
           properties: {
             query_string: {
               type: "string",
-              description: "The SurrealQL query string to execute."
-            }
+              description: "The SurrealQL query string to execute.",
+            },
           },
-          required: ["query_string"]
-        }
+          required: ["query_string"],
+        },
       },
       {
         name: "select",
-        description: "Select all records from a table or a specific record by ID.",
+        description:
+          "Select all records from a table or a specific record by ID.",
         inputSchema: {
           type: "object",
           properties: {
             table: {
               type: "string",
-              description: "The name of the table to select from."
+              description: "The name of the table to select from.",
             },
             id: {
               type: "string",
-              description: "Optional: The specific ID of the record to select (e.g., 'user:john'). If omitted, selects all records."
-            }
+              description:
+                "Optional: The specific ID of the record to select (e.g., 'user:john'). If omitted, selects all records.",
+            },
           },
-          required: ["table"]
-        }
+          required: ["table"],
+        },
       },
       {
         name: "create",
@@ -107,35 +112,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             table: {
               type: "string",
-              description: "The name of the table to create the record in."
+              description: "The name of the table to create the record in.",
             },
             data: {
               type: "object",
               description: "An object containing the data for the new record.",
-              additionalProperties: true // Allow any properties in the data object
-            }
+              additionalProperties: true, // Allow any properties in the data object
+            },
           },
-          required: ["table", "data"]
-        }
+          required: ["table", "data"],
+        },
       },
       {
         name: "update",
-        description: "Update a specific record with new data. Replaces the entire record content.",
+        description:
+          "Update a specific record with new data. Replaces the entire record content.",
         inputSchema: {
           type: "object",
           properties: {
             thing: {
               type: "string",
-              description: "The full record ID to update (e.g., 'table:id')."
+              description: "The full record ID to update (e.g., 'table:id').",
             },
             data: {
               type: "object",
               description: "An object containing the new data for the record.",
-              additionalProperties: true
-            }
+              additionalProperties: true,
+            },
           },
-          required: ["thing", "data"]
-        }
+          required: ["thing", "data"],
+        },
       },
       {
         name: "delete",
@@ -145,30 +151,33 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             thing: {
               type: "string",
-              description: "The full record ID to delete (e.g., 'table:id')."
-            }
+              description: "The full record ID to delete (e.g., 'table:id').",
+            },
           },
-          required: ["thing"]
-        }
+          required: ["thing"],
+        },
       },
       {
         name: "merge",
-        description: "Merge data into a specific record. Only updates specified fields.",
+        description:
+          "Merge data into a specific record. Only updates specified fields.",
         inputSchema: {
           type: "object",
           properties: {
             thing: {
               type: "string",
-              description: "The full record ID to merge data into (e.g., 'table:id')."
+              description:
+                "The full record ID to merge data into (e.g., 'table:id').",
             },
             data: {
               type: "object",
-              description: "An object containing the data to merge into the record.",
-              additionalProperties: true
-            }
+              description:
+                "An object containing the data to merge into the record.",
+              additionalProperties: true,
+            },
           },
-          required: ["thing", "data"]
-        }
+          required: ["thing", "data"],
+        },
       },
       {
         name: "patch",
@@ -178,7 +187,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             thing: {
               type: "string",
-              description: "The full record ID to patch (e.g., 'table:id')."
+              description: "The full record ID to patch (e.g., 'table:id').",
             },
             patches: {
               type: "array",
@@ -186,58 +195,69 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               items: {
                 type: "object",
                 properties: {
-                  op: { type: "string", enum: ["add", "remove", "replace", "move", "copy", "test"] },
+                  op: {
+                    type: "string",
+                    enum: ["add", "remove", "replace", "move", "copy", "test"],
+                  },
                   path: { type: "string" },
-                  value: { description: "Value for add, replace, test operations" },
-                  from: { type: "string", description: "Source path for move, copy operations" }
+                  value: {
+                    description: "Value for add, replace, test operations",
+                  },
+                  from: {
+                    type: "string",
+                    description: "Source path for move, copy operations",
+                  },
                 },
-                required: ["op", "path"]
-              }
-            }
+                required: ["op", "path"],
+              },
+            },
           },
-          required: ["thing", "patches"]
-        }
+          required: ["thing", "patches"],
+        },
       },
       {
         name: "upsert",
-        description: "Upsert a record: create if it doesn't exist, update if it does.",
+        description:
+          "Upsert a record: create if it doesn't exist, update if it does.",
         inputSchema: {
           type: "object",
           properties: {
             thing: {
               type: "string",
-              description: "The full record ID to upsert (e.g., 'table:id')."
+              description: "The full record ID to upsert (e.g., 'table:id').",
             },
             data: {
               type: "object",
               description: "An object containing the data for the record.",
-              additionalProperties: true
-            }
+              additionalProperties: true,
+            },
           },
-          required: ["thing", "data"]
-        }
+          required: ["thing", "data"],
+        },
       },
       {
         name: "insert",
-        description: "Insert multiple records into a table. Use 'create' for single records.",
+        description:
+          "Insert multiple records into a table. Use 'create' for single records.",
         inputSchema: {
           type: "object",
           properties: {
             table: {
               type: "string",
-              description: "The name of the table to insert records into."
+              description: "The name of the table to insert records into.",
             },
             data: {
               type: "array",
-              description: "An array of objects, each representing a record to insert.",
+              description:
+                "An array of objects, each representing a record to insert.",
               items: {
                 type: "object",
-                additionalProperties: true
-              }
-            }
+                additionalProperties: true,
+              },
+            },
           },
-          required: ["table", "data"]
-        }
+          required: ["table", "data"],
+        },
       },
       {
         name: "insertRelation",
@@ -247,26 +267,30 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             from_thing: {
               type: "string",
-              description: "The full record ID of the 'from' record (e.g., 'user:john')."
+              description:
+                "The full record ID of the 'from' record (e.g., 'user:john').",
             },
             relation_name: {
               type: "string",
-              description: "The name of the relation/edge table (e.g., 'likes')."
+              description:
+                "The name of the relation/edge table (e.g., 'likes').",
             },
             to_thing: {
               type: "string",
-              description: "The full record ID of the 'to' record (e.g., 'product:apple')."
+              description:
+                "The full record ID of the 'to' record (e.g., 'product:apple').",
             },
             data: {
               type: "object",
-              description: "Optional: An object containing data for the relation itself.",
-              additionalProperties: true
-            }
+              description:
+                "Optional: An object containing data for the relation itself.",
+              additionalProperties: true,
+            },
           },
-          required: ["from_thing", "relation_name", "to_thing"]
-        }
-      }
-    ]
+          required: ["from_thing", "relation_name", "to_thing"],
+        },
+      },
+    ],
   };
 });
 
@@ -276,8 +300,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     case "query": {
       // Validate input arguments
       const queryString = request.params.arguments?.query_string;
-      if (typeof queryString !== 'string' || !queryString.trim()) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'query_string' argument.");
+      if (typeof queryString !== "string" || !queryString.trim()) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'query_string' argument."
+        );
       }
 
       try {
@@ -288,11 +315,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Return the result (SurrealDB returns an array of results per query)
         return {
-          content: [{
-            type: "text",
-            // Convert result to JSON string for transport
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              // Convert result to JSON string for transport
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing query tool:`, e); // Log full error object
@@ -309,12 +338,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const table = request.params.arguments?.table;
       const id = request.params.arguments?.id; // Optional
 
-      if (typeof table !== 'string' || !table.trim()) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      if (typeof table !== "string" || !table.trim()) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'table' argument."
+        );
       }
-      if (id !== undefined && (typeof id !== 'string' || !id.trim())) {
+      if (id !== undefined && (typeof id !== "string" || !id.trim())) {
         // Allow empty string ID? For now, require non-empty if provided.
-        throw new McpError(ErrorCode.InvalidParams, "Invalid 'id' argument. Must be a non-empty string if provided.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'id' argument. Must be a non-empty string if provided."
+        );
       }
 
       // Construct the 'thing' string for SurrealDB (e.g., 'user' or 'user:john')
@@ -323,7 +358,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       if (id) {
         // If ID already contains ':', assume it's fully qualified (e.g., 'table:id')
         // Otherwise, prepend the table name.
-        thing = id.includes(':') ? id : `${table}:${id}`;
+        thing = id.includes(":") ? id : `${table}:${id}`;
       } else {
         thing = table; // Select all from table
       }
@@ -334,7 +369,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       let selectTarget: string | RecordId;
       if (id) {
         // Extract the ID part if the input 'id' is already 'table:id'
-        const idPart = id.includes(':') ? id.split(':')[1] : id;
+        const idPart = id.includes(":") ? id.split(":")[1] : id;
         selectTarget = new RecordId(table, idPart);
       } else {
         selectTarget = table;
@@ -342,21 +377,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       try {
         // Log the type being passed to db.select
-        console.log(`Executing select tool for target: ${thing} (passing type: ${selectTarget.constructor.name}) using db.select`);
+        console.log(
+          `Executing select tool for target: ${thing} (passing type: ${selectTarget.constructor.name}) using db.select`
+        );
         // Execute the select using the globally connected db instance
         const result = await db.select(selectTarget);
         console.log(`Select executed successfully for target: ${thing}.`);
 
         // Check if result is empty (record not found)
-        const responseText = result && (!Array.isArray(result) || result.length > 0)
-          ? JSON.stringify(result, null, 2)
-          : "[]"; // Return empty array string if not found
+        const responseText =
+          result && (!Array.isArray(result) || result.length > 0)
+            ? JSON.stringify(result, null, 2)
+            : "[]"; // Return empty array string if not found
 
         return {
-          content: [{
-            type: "text",
-            text: responseText
-          }]
+          content: [
+            {
+              type: "text",
+              text: responseText,
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing select tool for ${thing}:`, e); // Log full error object
@@ -373,11 +413,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const table = request.params.arguments?.table;
       const data = request.params.arguments?.data;
 
-      if (typeof table !== 'string' || !table.trim()) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      if (typeof table !== "string" || !table.trim()) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'table' argument."
+        );
       }
-      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      if (typeof data !== "object" || data === null || Array.isArray(data)) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'data' argument. Must be an object."
+        );
       }
 
       try {
@@ -385,15 +431,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Execute the create using the globally connected db instance
         // We pass the table name and the data object directly
         // Assert data type to satisfy TypeScript's index signature requirement
-        const result = await db.create(table, data as { [key: string]: unknown });
+        const result = await db.create(
+          table,
+          data as { [key: string]: unknown }
+        );
         console.log(`Create executed successfully for table: ${table}.`);
 
         // Return the created record(s) (db.create returns an array)
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing create tool for table ${table}:`, e); // Log full error object
@@ -410,18 +461,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const thing = request.params.arguments?.thing;
       const data = request.params.arguments?.data;
 
-      if (typeof thing !== 'string' || !thing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof thing !== "string" || !thing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
-      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      if (typeof data !== "object" || data === null || Array.isArray(data)) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'data' argument. Must be an object."
+        );
       }
 
       // Similar to db.select, db.update likely requires a RecordId instance
       // despite documentation examples showing a string.
-      const [table, idPart] = thing.split(':');
+      const [table, idPart] = thing.split(":");
       if (!table || !idPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'thing' format. Must be 'table:id'."
+        );
       }
       const recordId = new RecordId(table, idPart);
 
@@ -429,17 +489,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         console.log(`Executing update tool for: ${thing} (using RecordId)`);
         // Execute the update using the globally connected db instance
         // Pass the RecordId instance and assert data type
-        const result = await db.update(recordId, data as { [key: string]: unknown });
+        const result = await db.update(
+          recordId,
+          data as { [key: string]: unknown }
+        );
         console.log(`Update executed successfully for: ${thing}.`);
 
         // Return the updated record (db.update returns the updated record or array if multiple)
         // Note: The SDK documentation for update is slightly ambiguous on single vs array return,
         // but testing shows it returns the single updated object for a specific ID.
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing update tool for ${thing}:`, e); // Log full error object
@@ -455,14 +520,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Validate input arguments
       const thing = request.params.arguments?.thing;
 
-      if (typeof thing !== 'string' || !thing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof thing !== "string" || !thing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
 
       // Assume db.delete also requires a RecordId instance based on select/update behavior
-      const [table, idPart] = thing.split(':');
+      const [table, idPart] = thing.split(":");
       if (!table || !idPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'thing' format. Must be 'table:id'."
+        );
       }
       const recordId = new RecordId(table, idPart);
 
@@ -475,15 +546,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Check if result is empty (record might not have existed)
         // db.delete returns the deleted record(s) or potentially undefined/empty array if not found
-        const responseText = result && (!Array.isArray(result) || result.length > 0)
-          ? JSON.stringify(result, null, 2)
-          : "Record not found or already deleted."; // Provide informative message
+        const responseText =
+          result && (!Array.isArray(result) || result.length > 0)
+            ? JSON.stringify(result, null, 2)
+            : "Record not found or already deleted."; // Provide informative message
 
         return {
-          content: [{
-            type: "text",
-            text: responseText
-          }]
+          content: [
+            {
+              type: "text",
+              text: responseText,
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing delete tool for ${thing}:`, e); // Log full error object
@@ -500,17 +574,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const thing = request.params.arguments?.thing;
       const data = request.params.arguments?.data;
 
-      if (typeof thing !== 'string' || !thing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof thing !== "string" || !thing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
-      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      if (typeof data !== "object" || data === null || Array.isArray(data)) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'data' argument. Must be an object."
+        );
       }
 
       // db.merge likely requires a RecordId instance
-      const [table, idPart] = thing.split(':');
+      const [table, idPart] = thing.split(":");
       if (!table || !idPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'thing' format. Must be 'table:id'."
+        );
       }
       const recordId = new RecordId(table, idPart);
 
@@ -518,15 +601,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         console.log(`Executing merge tool for: ${thing} (using RecordId)`);
         // Execute the merge using the globally connected db instance
         // Pass the RecordId instance and assert data type
-        const result = await db.merge(recordId, data as { [key: string]: unknown });
+        const result = await db.merge(
+          recordId,
+          data as { [key: string]: unknown }
+        );
         console.log(`Merge executed successfully for: ${thing}.`);
 
         // Return the merged record
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing merge tool for ${thing}:`, e); // Log full error object
@@ -543,19 +631,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const thing = request.params.arguments?.thing;
       const patches = request.params.arguments?.patches;
 
-      if (typeof thing !== 'string' || !thing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof thing !== "string" || !thing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
       // Basic validation for patches array - could be more thorough
       if (!Array.isArray(patches) || patches.length === 0) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'patches' argument. Must be a non-empty array of patch operations.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'patches' argument. Must be a non-empty array of patch operations."
+        );
       }
       // Add more specific validation for each patch object if needed
 
       // db.patch likely requires a RecordId instance
-      const [table, idPart] = thing.split(':');
+      const [table, idPart] = thing.split(":");
       if (!table || !idPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'thing' format. Must be 'table:id'."
+        );
       }
       const recordId = new RecordId(table, idPart);
 
@@ -563,16 +660,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         console.log(`Executing patch tool for: ${thing} (using RecordId)`);
         // Execute the patch using the globally connected db instance
         // Pass the RecordId instance and the patches array
-        // Assert patches type to satisfy SDK expectations if necessary
-        const result = await db.patch(recordId, patches as any[]); // Using 'any[]' for simplicity, refine if needed
+        // Use a more generic type assertion to avoid compatibility issues
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await db.patch(recordId, patches as any);
         console.log(`Patch executed successfully for: ${thing}.`);
 
         // Return the patched record
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing patch tool for ${thing}:`, e); // Log full error object
@@ -589,17 +689,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const thing = request.params.arguments?.thing;
       const data = request.params.arguments?.data;
 
-      if (typeof thing !== 'string' || !thing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof thing !== "string" || !thing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
-      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      if (typeof data !== "object" || data === null || Array.isArray(data)) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'data' argument. Must be an object."
+        );
       }
 
       // db.upsert likely requires a RecordId instance
-      const [table, idPart] = thing.split(':');
+      const [table, idPart] = thing.split(":");
       if (!table || !idPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'thing' format. Must be 'table:id'."
+        );
       }
       const recordId = new RecordId(table, idPart);
 
@@ -607,15 +716,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         console.log(`Executing upsert tool for: ${thing} (using RecordId)`);
         // Execute the upsert using the globally connected db instance
         // Pass the RecordId instance and assert data type
-        const result = await db.upsert(recordId, data as { [key: string]: unknown });
+        const result = await db.upsert(
+          recordId,
+          data as { [key: string]: unknown }
+        );
         console.log(`Upsert executed successfully for: ${thing}.`);
 
         // Return the upserted record
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing upsert tool for ${thing}:`, e); // Log full error object
@@ -632,26 +746,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const table = request.params.arguments?.table;
       const data = request.params.arguments?.data;
 
-      if (typeof table !== 'string' || !table.trim()) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      if (typeof table !== "string" || !table.trim()) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'table' argument."
+        );
       }
-      if (!Array.isArray(data) || data.length === 0 || !data.every(item => typeof item === 'object' && item !== null)) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be a non-empty array of objects.");
+      if (
+        !Array.isArray(data) ||
+        data.length === 0 ||
+        !data.every((item) => typeof item === "object" && item !== null)
+      ) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'data' argument. Must be a non-empty array of objects."
+        );
       }
 
       try {
-        console.log(`Executing insert tool for table: ${table} with ${data.length} records`);
+        console.log(
+          `Executing insert tool for table: ${table} with ${data.length} records`
+        );
         // Execute the insert using the globally connected db instance
         // Pass the table name and the array of data objects
-        const result = await db.insert(table, data as { [key: string]: unknown }[]);
+        const result = await db.insert(
+          table,
+          data as { [key: string]: unknown }[]
+        );
         console.log(`Insert executed successfully for table: ${table}.`);
 
         // Return the inserted records (db.insert returns an array)
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
         console.error(`Error executing insert tool for table ${table}:`, e); // Log full error object
@@ -670,24 +801,42 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const toThing = request.params.arguments?.to_thing;
       const data = request.params.arguments?.data; // Optional
 
-      if (typeof fromThing !== 'string' || !fromThing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'from_thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof fromThing !== "string" || !fromThing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'from_thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
-      if (typeof relationName !== 'string' || !relationName.trim()) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'relation_name' argument.");
+      if (typeof relationName !== "string" || !relationName.trim()) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'relation_name' argument."
+        );
       }
-      if (typeof toThing !== 'string' || !toThing.includes(':')) {
-        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'to_thing' argument. Must be a full record ID (e.g., 'table:id').");
+      if (typeof toThing !== "string" || !toThing.includes(":")) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing or invalid 'to_thing' argument. Must be a full record ID (e.g., 'table:id')."
+        );
       }
-      if (data !== undefined && (typeof data !== 'object' || data === null || Array.isArray(data))) {
-        throw new McpError(ErrorCode.InvalidParams, "Invalid 'data' argument. Must be an object if provided.");
+      if (
+        data !== undefined &&
+        (typeof data !== "object" || data === null || Array.isArray(data))
+      ) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'data' argument. Must be an object if provided."
+        );
       }
 
       // Parse record IDs
-      const [fromTable, fromIdPart] = fromThing.split(':');
-      const [toTable, toIdPart] = toThing.split(':');
+      const [fromTable, fromIdPart] = fromThing.split(":");
+      const [toTable, toIdPart] = toThing.split(":");
       if (!fromTable || !fromIdPart || !toTable || !toIdPart) {
-          throw new McpError(ErrorCode.InvalidParams, "Invalid 'from_thing' or 'to_thing' format. Must be 'table:id'.");
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Invalid 'from_thing' or 'to_thing' format. Must be 'table:id'."
+        );
       }
       const fromRecordId = new RecordId(fromTable, fromIdPart);
       const toRecordId = new RecordId(toTable, toIdPart);
@@ -696,11 +845,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const relationData = {
         in: fromRecordId,
         out: toRecordId,
-        ...(data as { [key: string]: unknown } | undefined) // Spread optional data
+        ...(data as { [key: string]: unknown } | undefined), // Spread optional data
       };
 
       try {
-        console.log(`Executing insertRelation tool: ${fromThing} -> ${relationName} -> ${toThing}`);
+        console.log(
+          `Executing insertRelation tool: ${fromThing} -> ${relationName} -> ${toThing}`
+        );
         // Execute the insertRelation using the globally connected db instance
         // Pass the relation table name and the constructed data object
         const result = await db.insertRelation(relationName, relationData);
@@ -708,13 +859,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Return the created relation record(s) (db.insertRelation returns an array)
         return {
-          content: [{
-            type: "text",
-            text: JSON.stringify(result, null, 2)
-          }]
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
         };
       } catch (e) {
-        console.error(`Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}):`, e); // Log full error object
+        console.error(
+          `Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}):`,
+          e
+        ); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -725,12 +881,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     default:
       // Use McpError for unknown tools
-      throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
+      throw new McpError(
+        ErrorCode.MethodNotFound,
+        `Unknown tool: ${request.params.name}`
+      );
   }
 });
 
 // --------------------------
-
 
 /**
  * Main function to start the server.
@@ -751,17 +909,21 @@ async function main() {
       },
     });
     // Log success using the environment variables
-    console.log(`Successfully connected to SurrealDB (NS: ${DB_NAMESPACE}, DB: ${DB_DATABASE})`);
+    console.log(
+      `Successfully connected to SurrealDB (NS: ${DB_NAMESPACE}, DB: ${DB_DATABASE})`
+    );
 
     // Start the MCP server communication
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.log("SurrealDB MCP Server connected via stdio transport.");
-
   } catch (error) {
     console.error("--- FATAL ERROR ---");
     if (error instanceof Error) {
-      console.error("Failed to connect to SurrealDB or start MCP server:", error.message);
+      console.error(
+        "Failed to connect to SurrealDB or start MCP server:",
+        error.message
+      );
       console.error(error.stack);
     } else {
       console.error("An unknown error occurred during startup:", error);
@@ -774,7 +936,7 @@ async function main() {
 }
 
 // Graceful shutdown
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   console.log("\nCaught interrupt signal (Ctrl+C).");
   console.log("Closing SurrealDB connection...");
   await db.close();

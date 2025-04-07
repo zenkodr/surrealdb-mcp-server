@@ -22,6 +22,9 @@
     *   Implemented `dev`, `lint`, `format` scripts in `package.json`.
 *   **Input Validation Decision:** Decided against adding stricter regex validation for table/record IDs, relying instead on SurrealDB's own parsing and error handling, keeping only basic type/presence checks.
 *   **Fixed Code Duplication:** Resolved duplicated code block near the end of `src/index.ts`.
+*   **Updated ESLint Configuration:** Created `eslint.config.js` to use the new ESLint v9.0.0+ format, replacing the older `.eslintrc.cjs` approach.
+*   **Fixed Linting Issues:** Removed unused imports and added appropriate ESLint disable comments for necessary `any` type usage.
+*   **Verified Tool Functionality:** Manually tested all core tools (`query`, `create`, `select`, `update`, `patch`, `delete`) after code changes to ensure continued functionality.
 *   **Updated Memory Bank:** `progress.md` and `activeContext.md` updated.
 
 ## Next Steps
