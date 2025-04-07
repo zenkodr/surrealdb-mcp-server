@@ -295,7 +295,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing query tool: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing query tool:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -359,7 +359,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing select tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing select tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -396,7 +396,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing create tool for table ${table}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing create tool for table ${table}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -442,7 +442,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing update tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing update tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -486,7 +486,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing delete tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing delete tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -529,7 +529,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing merge tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing merge tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -575,7 +575,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing patch tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing patch tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -618,7 +618,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing upsert tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing upsert tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -654,7 +654,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing insert tool for table ${table}: ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing insert tool for table ${table}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -714,7 +714,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }]
         };
       } catch (e) {
-        console.error(`Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}): ${e instanceof Error ? e.message : e}`);
+        console.error(`Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}):`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
