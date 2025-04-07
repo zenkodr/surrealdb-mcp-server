@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 
 /**
- * This is a template MCP server that implements a simple notes system.
- * It demonstrates core MCP concepts like resources and tools by allowing:
- * - Listing notes as resources
- * - Reading individual notes
- * - Creating new notes via a tool
- * - Connecting to SurrealDB
- * - (Future) Exposing tools for DB operations
+ * SurrealDB MCP Server
+ * 
+ * This MCP server provides a standardized interface for AI assistants to interact with a SurrealDB database.
+ * It implements tools for common SurrealDB operations including:
+ * - Executing raw SurrealQL queries
+ * - Selecting, creating, updating, and deleting records
+ * - Merging and patching data
+ * - Upserting records
+ * - Inserting multiple records
+ * - Creating graph relations between records
  */
 
-// MCP SDK Imports
 // MCP SDK Imports
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -48,12 +50,11 @@ const db = new Surreal();
  * Create an MCP server instance.
  * Capabilities will be added as tools are implemented.
  */
+// Create server instance
 const server = new Server(
   {
-    // Name and version from package.json are used by default,
-    // but you can override them here if needed.
     name: "surrealdb-mcp-server",
-    version: "0.1.0",
+    version: "0.1.2", // Updated to match current package version
   },
   {
     // Declare tool capability
