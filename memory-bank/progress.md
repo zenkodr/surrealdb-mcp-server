@@ -1,4 +1,4 @@
-# Progress: SurrealDB MCP Server (Phase 2 - Initial Tool Tested)
+# Progress: SurrealDB MCP Server (Phase 3 - Testing & Finalization)
 
 ## What Works
 
@@ -21,19 +21,35 @@
 *   **Eighth Tool (`upsert`):** Implemented the `upsert` tool in `src/index.ts` using `db.upsert()`. Confirmed need for `RecordId`. Tested successfully for both create and update scenarios.
 *   **Ninth Tool (`insert`):** Implemented the `insert` tool in `src/index.ts` using `db.insert()`. Tested successfully for inserting multiple records.
 *   **Tenth Tool (`insertRelation`):** Implemented the `insertRelation` tool in `src/index.ts` using `db.insertRelation()`. Corrected initial implementation based on documentation. Tested successfully.
+*   **Improved Error Logging:** Updated `catch` blocks to log full error objects for better debugging.
+*   **Project Publishing Preparation:**
+    *   Updated `package.json` with metadata, `bin`, `files`, `engines` fields.
+    *   Created comprehensive `README.md` with installation and configuration instructions.
+    *   Added SurrealDB logo to README.
+    *   Created `LICENSE` file (MIT).
+    *   Created `CONTRIBUTING.md` with guidelines for contributors.
+    *   Created `llms-install.md` for automated installation.
+    *   Added dev dependencies and configuration files (`.eslintrc.cjs`, `.prettierrc.json`).
+    *   Implemented `dev`, `lint`, `format` scripts in `package.json`.
+*   **Code Quality Improvements:**
+    *   Fixed code duplication in `src/index.ts`.
+    *   Decided on input validation approach (relying on SurrealDB's validation).
 *   Memory Bank core files are initialized and being updated.
 
-## What's Left to Build (Phase 2 - MCP Server)
+## What's Left to Build (Phase 3 - Testing & Finalization)
 
-1.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging throughout the server.
-2.  **Testing:** Add more thorough tests for all tools, covering edge cases.
-3.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
+1.  **Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
+2.  **Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
+3.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
+4.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
 
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
-*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) and additional mutation/relation tools (`merge`, `patch`, `upsert`, `insert`, `insertRelation`) are implemented and tested. Credential refactoring complete.
-*   Server provides a comprehensive baseline of common SurrealDB operations. Ready for next steps: improving robustness or adding more tests.
+*   Phase 2 (Robustness Improvements) is complete.
+*   Phase 3 (Testing & Finalization): Project structure and documentation are complete. Automated tests remain to be implemented.
+*   Server provides a comprehensive baseline of common SurrealDB operations and is well-documented for potential contributors.
+*   Project is ready for publishing once tests are implemented.
 
 ## Known Issues
 
