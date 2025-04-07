@@ -30,17 +30,48 @@ The server exposes the following tools for interacting with SurrealDB:
 
 *(Refer to the MCP host's tool listing for detailed input schemas.)*
 
-## Installation (Local Development)
+## Getting Started
 
-```bash
-git clone https://github.com/nsxdavid/surrealdb-mcp-server.git
-cd surrealdb-mcp-server
-npm install
-```
+This MCP server allows AI assistants like Claude to interact with a SurrealDB database. Here's how to get it up and running:
 
-## Configuration
+### Quick Start (Recommended)
 
-This server requires environment variables to connect to your SurrealDB instance. These must be provided via the MCP host's settings file (e.g., `cline_mcp_settings.json` for the VS Code extension or `claude_desktop_config.json` for the desktop app).
+1. **Configure your AI assistant to use the server:**
+   
+   Add the server configuration to your AI assistant's MCP settings file (e.g., `cline_mcp_settings.json` for the VS Code extension or `claude_desktop_config.json` for the desktop app).
+
+   ```json
+   {
+     "mcpServers": {
+       "surrealdb": {
+         "command": "npx",
+         "args": [
+           "-y",
+           "surrealdb-mcp-server"
+         ],
+         "env": {
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "your_namespace",
+           "SURREALDB_DB": "your_database",
+           "SURREALDB_USER": "your_db_user",
+           "SURREALDB_PASS": "your_db_password"
+         },
+         "disabled": false,
+         "autoApprove": []
+       }
+     }
+   }
+   ```
+
+   > **Note:** Using the `npx` command as shown above means the MCP client will automatically download and run the package from npm when needed. No manual installation is required.
+
+2. **Start using the tools with your AI assistant:**
+   
+   Once configured, your AI assistant will have access to all the SurrealDB tools listed above. You can ask it to query or manipulate data in your SurrealDB instance.
+
+### Configuration Details
+
+This server requires environment variables to connect to your SurrealDB instance. These must be provided via the MCP host's settings file.
 
 **Required Environment Variables:**
 
@@ -50,7 +81,9 @@ This server requires environment variables to connect to your SurrealDB instance
 -   `SURREALDB_USER`: The username for authentication (Root, NS, DB, or Scope user).
 -   `SURREALDB_PASS`: The password for the specified user.
 
-**Example MCP Host Configuration (Local Path):**
+**Alternative Configuration (Local Path):**
+
+If you've cloned the repository or want to use a local build, you can use this configuration:
 
 ```json
 {
@@ -72,38 +105,8 @@ This server requires environment variables to connect to your SurrealDB instance
 }
 ```
 
--   **Important:** Replace `/path/to/your/surrealdb-mcp-server` with the actual path where you cloned the repository.
--   Replace the example environment variable values with your actual SurrealDB connection details.
-
-**Example MCP Host Configuration (NPX - Recommended for Ease of Use):**
-
-If you publish this package to npm, users can run it directly using `npx` without cloning:
-
-```json
-{
-  "mcpServers": {
-    "surrealdb": {
-      "command": "npx",
-      "args": [
-        "-y", // Skips confirmation prompt
-        "surrealdb-mcp-server" // Assumes package is published with this name
-      ],
-      "env": {
-        "SURREALDB_URL": "ws://localhost:8000",
-        "SURREALDB_NS": "your_namespace",
-        "SURREALDB_DB": "your_database",
-        "SURREALDB_USER": "your_db_user",
-        "SURREALDB_PASS": "your_db_password"
-      },
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}
-```
-
--   Replace the environment variable values with your actual SurrealDB connection details.
--   This method requires the package to be published to npm under the name `surrealdb-mcp-server`.
+- Replace `/path/to/your/surrealdb-mcp-server` with the actual path where you cloned the repository
+- Replace the environment variable values with your actual SurrealDB connection details
 
 ## Configuration File Locations
 
@@ -115,26 +118,44 @@ If you publish this package to npm, users can run it directly using `npx` withou
 
 ## Development
 
-### Building
+If you want to contribute to the development of this MCP server, follow these steps:
 
-```bash
-npm run build
-```
+### Local Development Setup
 
-### Running Locally (Development)
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nsxdavid/surrealdb-mcp-server.git
+   cd surrealdb-mcp-server
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Build the project:**
+   ```bash
+   npm run build
+   ```
+
+### Running Locally
 
 ```bash
 # Ensure required SURREALDB_* environment variables are set
-npm run dev # (Note: dev script needs implementation, e.g., using ts-node)
+npm run dev # (Note: dev script uses ts-node to run TypeScript directly)
 # Or run the built version:
 npm start
 ```
 
-### Running Tests
+### Testing
 
 ```bash
 npm test # (Note: Tests need to be implemented)
 ```
+
+### Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

@@ -30,11 +30,15 @@
     *   Updated `package.json` with correct repository information
     *   Created `.npmignore` file to control which files are published to npm
     *   Verified build process works correctly
+*   **Publication:**
+    *   Published to npm as versions 0.1.0, 0.1.1, and 0.1.2
+    *   Improved README with clearer installation and usage instructions
+    *   Fixed JSON examples in README to remove comments
 *   **Updated Memory Bank:** `progress.md` and `activeContext.md` updated.
 
 ## Next Steps
 
-1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.1.
+1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.2.
 2.  **(Optional) Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
 3.  **(Optional) Implement `test` script:** Update `package.json` to run the chosen test framework.
 

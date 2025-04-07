@@ -44,13 +44,15 @@
 *   **npm Publication:**
     *   Created `.npmignore` file to control which files are published to npm
     *   Verified build process works correctly
-    *   Published to npm registry as versions 0.1.0 and 0.1.1
-    *   Updated README with correct GitHub repository URL
+    *   Published to npm registry as versions 0.1.0, 0.1.1, and 0.1.2
+    *   Improved README with clearer installation and usage instructions
+    *   Fixed JSON examples in README to remove comments
+    *   Added note clarifying that no manual installation is required when using npx
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 3 - Finalization & Publication)
 
-1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.1.
+1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.2.
 2.  **(Optional) Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
 3.  **(Optional) Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
 4.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
@@ -60,7 +62,7 @@
 
 *   Phase 1 (Connection Verification) is complete.
 *   Phase 2 (Robustness Improvements) is complete.
-*   Phase 3 (Finalization & Publication): Project structure and documentation are complete. GitHub repository is published. Package is published to npm.
+*   Phase 3 (Finalization & Publication): Project structure and documentation are complete. GitHub repository is published. Package is published to npm with improved documentation.
 *   Server provides a comprehensive baseline of common SurrealDB operations and is well-documented for potential contributors.
 *   Project is published and ready for use.
 
