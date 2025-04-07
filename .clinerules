@@ -1,0 +1,27 @@
+# Cline Rules: SurrealDB MCP Server Project
+
+## Core Problem-Solving Strategy
+
+**HARD RULE:** When stuck or repeating failed attempts on the same problem:
+1.  **STOP:** Do not immediately retry the same failed approach.
+2.  **THINK & ANALYZE:** Review the steps taken, the errors encountered, and the available information (Memory Bank, code, error messages). Identify the core assumptions and why they might be wrong.
+3.  **RESEARCH:** Actively seek external information. Prioritize web searches (using tools like Brave Search) for specific error messages, library documentation, GitHub issues, Stack Overflow discussions, or examples related to the problem domain.
+4.  **RE-PLAN:** Formulate a *new* approach based on the analysis and research before attempting further action.
+
+## Key Learnings & Patterns
+
+1.  **SurrealDB SDK Package:** Use the `surrealdb` npm package, not the deprecated `surrealdb.js`.
+2.  **Connection & Authentication (Root):** The most reliable method found for connecting as root to a specific namespace/database with the `surrealdb` (v1.x+) SDK is to provide all details within the `connect` method's options:
+    ```javascript
+    await db.connect(DB_ENDPOINT, {
+      namespace: 'YOUR_NAMESPACE', // e.g., 'n8n'
+      database: 'YOUR_DATABASE',   // e.g., 'AIWorld'
+      auth: {
+        username: 'YOUR_ROOT_USER', // e.g., 'root'
+        password: 'YOUR_ROOT_PASS', // e.g., 'root'
+      },
+    });
+    ```
+    *   This avoids potential context issues encountered with separate `db.use()` and `db.signin()` calls after connecting.
+    *   The `auth` object requires `username` and `password` keys, based on SDK error messages, even if some documentation examples use `user`/`pass`.
+3.  **Namespace/Database Existence:** Ensure the target namespace and database exist *before* attempting to connect using the method above. While the script *could* define them using root privileges, it's cleaner if they are pre-existing for standard operations. (User confirmed `n8n`/`AIWorld` exist).
