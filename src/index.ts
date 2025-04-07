@@ -98,8 +98,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["table"]
         }
+      },
+      {
+        name: "create",
+        description: "Create a new record in a table with the specified data.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            table: {
+              type: "string",
+              description: "The name of the table to create the record in."
+            },
+            data: {
+              type: "object",
+              description: "An object containing the data for the new record.",
+              additionalProperties: true // Allow any properties in the data object
+            }
+          },
+          required: ["table", "data"]
+        }
+      },
+      {
+        name: "update",
+        description: "Update a specific record with new data. Replaces the entire record content.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thing: {
+              type: "string",
+              description: "The full record ID to update (e.g., 'table:id')."
+            },
+            data: {
+              type: "object",
+              description: "An object containing the new data for the record.",
+              additionalProperties: true
+            }
+          },
+          required: ["thing", "data"]
+        }
       }
-      // Add more tools here later (e.g., create, update, delete)
+      // Add more tools here later (e.g., delete)
     ]
   };
 });
@@ -194,6 +232,89 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `SurrealDB select failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "create": {
+      // Validate input arguments
+      const table = request.params.arguments?.table;
+      const data = request.params.arguments?.data;
+
+      if (typeof table !== 'string' || !table.trim()) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      }
+      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      }
+
+      try {
+        console.log(`Executing create tool for table: ${table}`);
+        // Execute the create using the globally connected db instance
+        // We pass the table name and the data object directly
+        // Assert data type to satisfy TypeScript's index signature requirement
+        const result = await db.create(table, data as { [key: string]: unknown });
+        console.log(`Create executed successfully for table: ${table}.`);
+
+        // Return the created record(s) (db.create returns an array)
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing create tool for table ${table}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB create failed for table ${table}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "update": {
+      // Validate input arguments
+      const thing = request.params.arguments?.thing;
+      const data = request.params.arguments?.data;
+
+      if (typeof thing !== 'string' || !thing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      }
+
+      // Similar to db.select, db.update likely requires a RecordId instance
+      // despite documentation examples showing a string.
+      const [table, idPart] = thing.split(':');
+      if (!table || !idPart) {
+          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+      }
+      const recordId = new RecordId(table, idPart);
+
+      try {
+        console.log(`Executing update tool for: ${thing} (using RecordId)`);
+        // Execute the update using the globally connected db instance
+        // Pass the RecordId instance and assert data type
+        const result = await db.update(recordId, data as { [key: string]: unknown });
+        console.log(`Update executed successfully for: ${thing}.`);
+
+        // Return the updated record (db.update returns the updated record or array if multiple)
+        // Note: The SDK documentation for update is slightly ambiguous on single vs array return,
+        // but testing shows it returns the single updated object for a specific ID.
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing update tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB update failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
         );
       }
     }

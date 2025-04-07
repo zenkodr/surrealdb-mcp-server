@@ -1,31 +1,35 @@
-# Active Context: SurrealDB MCP Server (Phase 2 - Initial Tool Implementation)
+# Active Context: SurrealDB MCP Server (Phase 2 - Core Tool Implementation)
 
 ## Current Focus
 
-*   **Phase 2: Initial Tool Implementation & Testing.** The basic MCP server structure is in place, connects to the database, and has the first `query` tool implemented. Focus is now on building, configuring, and testing this initial version.
+*   **Phase 2: Core Tool Implementation.** Implementing the core CRUD (Create, Read, Update, Delete) operations as MCP tools. `query`, `select`, `create`, and `update` are complete and tested. Focus is now on implementing the `delete` tool.
 
 ## Recent Changes
 
 *   **Completed Phase 1 (Connection Verification).**
-*   **Scaffolded MCP Server:** Successfully created the TypeScript MCP server structure in the current directory using `create-server` (via temp folder workaround).
-*   **Installed Dependencies:** Installed core MCP/TypeScript dependencies and added `surrealdb`.
-*   **Implemented Basic Connection:** Integrated the validated connection logic from `test-connection.js` into `src/index.ts`. The server now attempts to connect to SurrealDB on startup.
-*   **Defined First Tool (`query`):** Implemented `ListTools` and `CallTool` handlers in `src/index.ts` for a basic `query` tool that accepts a `query_string`.
+*   **Scaffolded MCP Server & Dependencies.**
+*   **Implemented Basic Connection & Credential Refactoring.**
+*   **Implemented `query` tool:** Tested successfully.
+*   **Implemented `select` tool:** Investigated `db.select()` behavior, confirmed need for `RecordId` instance for specific IDs. Tested successfully.
+*   **Implemented `create` tool:** Tested successfully.
+*   **Implemented `update` tool:** Confirmed need for `RecordId` instance. Tested successfully.
+*   **Updated Memory Bank:** `progress.md` and `.clinerules` updated with findings.
 
 ## Next Steps
 
-1.  **Build:** Compile the TypeScript code using `npm run build`.
-2.  **Configure:** Add/update the server entry in the MCP host settings (`cline_mcp_settings.json` or similar) so it can be run. This involves specifying the command (`node`), arguments (`build/index.js`), and potentially environment variables later.
-3.  **Test Startup:** Run the server via the MCP host to verify it starts and successfully connects to the database.
-4.  **Test Tool:** Use an MCP client (e.g., VS Code extension) to call the `query` tool with a simple, non-destructive query (e.g., `INFO FOR DB;`) and verify the response.
-5.  **Update `progress.md`:** Reflect the completion of the initial server structure and `query` tool.
+1.  **Implement `delete` tool:** Add the tool definition and handler logic using `db.delete()`, likely requiring a `RecordId` instance similar to `select` and `update`.
+2.  **Build & Test `delete` tool.**
+3.  **Update Memory Bank:** Reflect completion of `delete` tool.
+4.  **Consider Error Handling/Robustness:** Plan improvements for error reporting and logging.
+5.  **Consider Further Testing:** Plan more comprehensive tests.
 
 ## Active Decisions & Considerations
 
-*   The successful connection pattern involves passing `namespace`, `database`, and `auth` within the `connect` options. This will be the primary method used in the MCP server.
-*   The MCP server is now TypeScript-based.
-*   Credentials (`username`/`password`) are currently hardcoded in `src/index.ts` (marked with TODO) and need to be moved to environment variables managed by the MCP host settings for proper deployment.
+*   The successful connection pattern involves passing `namespace`, `database`, and `auth` within the `connect` options.
+*   The MCP server is TypeScript-based.
+*   Credentials are sourced from environment variables.
+*   `db.select()` and `db.update()` require `RecordId` instances for specific record operations (documented in `.clinerules`). Assume `db.delete()` will likely require the same.
 
 ## Future Considerations
 
-*   **SDK Documentation:** Consider opening a GitHub issue or PR for the `surrealdb.js` SDK documentation regarding the `db.select()` method. The current example for selecting a specific record (`db.select("table:id")`) is misleading as the method requires a `RecordId` instance (`new RecordId(table, idPart)`) according to TypeScript definitions and observed behavior (v1.3.1).
+*   **SDK Documentation:** Consider opening a GitHub issue or PR for the `surrealdb.js` SDK documentation regarding the `db.select()` and `db.update()` methods. The examples for selecting/updating specific records (`db.select("table:id")`) are misleading as the methods require a `RecordId` instance (`new RecordId(table, idPart)`) according to TypeScript definitions and observed behavior (v1.3.1).
