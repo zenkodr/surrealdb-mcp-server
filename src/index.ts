@@ -48,8 +48,10 @@ const server = new Server(
       version: "0.1.0",
     },
     {
-    // No capabilities defined yet
-    capabilities: {},
+    // Declare tool capability
+    capabilities: {
+      tools: {} // This enables tool-related handlers like ListTools and CallTool
+    },
   }
 );
 
