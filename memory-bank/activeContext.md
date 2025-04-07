@@ -1,28 +1,27 @@
-# Active Context: SurrealDB MCP Server (Phase 2 - MCP Server Scaffolding)
+# Active Context: SurrealDB MCP Server (Phase 2 - Initial Tool Implementation)
 
 ## Current Focus
 
-*   **Phase 2: MCP Server Scaffolding.** Having successfully verified the database connection method, the focus now shifts to creating the basic structure for the SurrealDB MCP server using the `@modelcontextprotocol/create-server` tool.
+*   **Phase 2: Initial Tool Implementation & Testing.** The basic MCP server structure is in place, connects to the database, and has the first `query` tool implemented. Focus is now on building, configuring, and testing this initial version.
 
 ## Recent Changes
 
-*   **Completed Phase 1 (Connection Verification):**
-    *   Initialized npm (`package.json`).
-    *   Installed the correct `surrealdb` SDK (v1.x+).
-    *   Created and iteratively debugged `test-connection.js`.
-    *   **Successfully connected and queried the database (`n8n`/`AIWorld` on `ws://localhost:8000`) by providing `namespace`, `database`, and `auth` options directly within the `db.connect()` method.** This avoids issues encountered with separate `use()` and `signin()` calls.
+*   **Completed Phase 1 (Connection Verification).**
+*   **Scaffolded MCP Server:** Successfully created the TypeScript MCP server structure in the current directory using `create-server` (via temp folder workaround).
+*   **Installed Dependencies:** Installed core MCP/TypeScript dependencies and added `surrealdb`.
+*   **Implemented Basic Connection:** Integrated the validated connection logic from `test-connection.js` into `src/index.ts`. The server now attempts to connect to SurrealDB on startup.
+*   **Defined First Tool (`query`):** Implemented `ListTools` and `CallTool` handlers in `src/index.ts` for a basic `query` tool that accepts a `query_string`.
 
 ## Next Steps
 
-1.  **Update Memory Bank:** Reflect Phase 1 completion and findings in `progress.md`, `techContext.md`, and `.clinerules`.
-2.  **Scaffold MCP Server:** Use `npx @modelcontextprotocol/create-server surrealdb-mcp-server` (or similar name) to create the server project structure (likely using TypeScript).
-3.  **Install Dependencies:** Add `surrealdb` to the new server's `package.json`.
-4.  **Implement Basic Connection:** Adapt the successful connection logic from `test-connection.js` into the MCP server's main file (e.g., `src/index.ts`), likely establishing the connection when the server starts.
-5.  **Define First Tool (e.g., `query`):** Implement the `ListTools` handler and the `CallTool` handler for a basic `query` tool that takes a SurrealQL string and executes it using the established connection.
+1.  **Build:** Compile the TypeScript code using `npm run build`.
+2.  **Configure:** Add/update the server entry in the MCP host settings (`cline_mcp_settings.json` or similar) so it can be run. This involves specifying the command (`node`), arguments (`build/index.js`), and potentially environment variables later.
+3.  **Test Startup:** Run the server via the MCP host to verify it starts and successfully connects to the database.
+4.  **Test Tool:** Use an MCP client (e.g., VS Code extension) to call the `query` tool with a simple, non-destructive query (e.g., `INFO FOR DB;`) and verify the response.
+5.  **Update `progress.md`:** Reflect the completion of the initial server structure and `query` tool.
 
 ## Active Decisions & Considerations
 
 *   The successful connection pattern involves passing `namespace`, `database`, and `auth` within the `connect` options. This will be the primary method used in the MCP server.
-*   The MCP server will be built using TypeScript, leveraging the structure provided by `create-server`.
-*   Need to decide on the exact name for the server project directory if different from the current root. Sticking with the current directory seems appropriate unless specified otherwise.
-*   Credentials (`username`/`password`) will eventually need to be sourced from environment variables provided by the MCP host, rather than hardcoded.
+*   The MCP server is now TypeScript-based.
+*   Credentials (`username`/`password`) are currently hardcoded in `src/index.ts` (marked with TODO) and need to be moved to environment variables managed by the MCP host settings for proper deployment.
