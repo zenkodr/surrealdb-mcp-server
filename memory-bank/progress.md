@@ -16,6 +16,9 @@
 *   **Third Tool (`create`):** Implemented the `create` tool in `src/index.ts` using `db.create()`. Tested successfully by creating a record in `mcp_test_data`.
 *   **Fourth Tool (`update`):** Implemented the `update` tool in `src/index.ts`. Similar to `select`, required using `new RecordId(table, idPart)` for `db.update()` instead of the `table:id` string shown in documentation examples. Tested successfully by updating the test record.
 *   **Fifth Tool (`delete`):** Implemented the `delete` tool in `src/index.ts`. Assumed and confirmed need for `new RecordId(table, idPart)` for `db.delete()`. Added handling for empty results when record not found. Tested successfully by deleting the test record and confirming non-existence.
+*   **Sixth Tool (`merge`):** Implemented the `merge` tool in `src/index.ts` using `db.merge()`. Confirmed need for `RecordId`. Tested successfully.
+*   **Seventh Tool (`patch`):** Implemented the `patch` tool in `src/index.ts` using `db.patch()`. Confirmed need for `RecordId`. Tested successfully with multiple patch operations.
+*   **Eighth Tool (`upsert`):** Implemented the `upsert` tool in `src/index.ts` using `db.upsert()`. Confirmed need for `RecordId`. Tested successfully for both create and update scenarios.
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 2 - MCP Server)
@@ -27,8 +30,8 @@
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
-*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) are implemented and tested. Credential refactoring complete.
-*   Basic server functionality is established. Ready for next steps: improving robustness or adding optional tools.
+*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) and additional mutation tools (`merge`, `patch`, `upsert`) are implemented and tested. Credential refactoring complete.
+*   Server provides a good baseline of common SurrealDB operations. Ready for next steps: improving robustness or adding optional tools like `insert`.
 
 ## Known Issues
 
@@ -72,9 +75,9 @@ Based on the [JavaScript SDK Methods documentation](https://surrealdb.com/docs/s
 *   `[?]` `db.insert<T,U>(thing,data)` - *For bulk inserts.*
 *   `[?]` `db.insertRelation<T,U>(thing,data)` - *For graph relations.*
 *   `[x]` `db.update<T,U>(thing,data)`
-*   `[ ]` `db.upsert<T,U>(thing,data)` - *Recommended next.*
-*   `[ ]` `db.merge<T,U>(thing,data)` - *Recommended next.*
-*   `[ ]` `db.patch<T,U>(thing,data)` - *Recommended next.*
+*   `[x]` `db.upsert<T,U>(thing,data)`
+*   `[x]` `db.merge<T,U>(thing,data)`
+*   `[x]` `db.patch<T,U>(thing,data)`
 *   `[x]` `db.delete<T,U>(thing)`
 
 **Authentication methods**
@@ -83,5 +86,3 @@ Based on the [JavaScript SDK Methods documentation](https://surrealdb.com/docs/s
 *   `[-]` `db.invalidate()`
 *   `[-]` `db.authenticate(token)`
 *   `[-]` `db.info<T>()`
-
-**Recommendation:** Implement `merge`, `patch`, and `upsert` next for more flexible data modification. `insert` could follow if bulk creation is needed.

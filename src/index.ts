@@ -150,6 +150,72 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["thing"]
         }
+      },
+      {
+        name: "merge",
+        description: "Merge data into a specific record. Only updates specified fields.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thing: {
+              type: "string",
+              description: "The full record ID to merge data into (e.g., 'table:id')."
+            },
+            data: {
+              type: "object",
+              description: "An object containing the data to merge into the record.",
+              additionalProperties: true
+            }
+          },
+          required: ["thing", "data"]
+        }
+      },
+      {
+        name: "patch",
+        description: "Apply JSON patches to a specific record.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thing: {
+              type: "string",
+              description: "The full record ID to patch (e.g., 'table:id')."
+            },
+            patches: {
+              type: "array",
+              description: "An array of JSON Patch operations (RFC 6902).",
+              items: {
+                type: "object",
+                properties: {
+                  op: { type: "string", enum: ["add", "remove", "replace", "move", "copy", "test"] },
+                  path: { type: "string" },
+                  value: { description: "Value for add, replace, test operations" },
+                  from: { type: "string", description: "Source path for move, copy operations" }
+                },
+                required: ["op", "path"]
+              }
+            }
+          },
+          required: ["thing", "patches"]
+        }
+      },
+      {
+        name: "upsert",
+        description: "Upsert a record: create if it doesn't exist, update if it does.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thing: {
+              type: "string",
+              description: "The full record ID to upsert (e.g., 'table:id')."
+            },
+            data: {
+              type: "object",
+              description: "An object containing the data for the record.",
+              additionalProperties: true
+            }
+          },
+          required: ["thing", "data"]
+        }
       }
     ]
   };
@@ -376,6 +442,138 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `SurrealDB delete failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "merge": {
+      // Validate input arguments
+      const thing = request.params.arguments?.thing;
+      const data = request.params.arguments?.data;
+
+      if (typeof thing !== 'string' || !thing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      }
+
+      // db.merge likely requires a RecordId instance
+      const [table, idPart] = thing.split(':');
+      if (!table || !idPart) {
+          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+      }
+      const recordId = new RecordId(table, idPart);
+
+      try {
+        console.log(`Executing merge tool for: ${thing} (using RecordId)`);
+        // Execute the merge using the globally connected db instance
+        // Pass the RecordId instance and assert data type
+        const result = await db.merge(recordId, data as { [key: string]: unknown });
+        console.log(`Merge executed successfully for: ${thing}.`);
+
+        // Return the merged record
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing merge tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB merge failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "patch": {
+      // Validate input arguments
+      const thing = request.params.arguments?.thing;
+      const patches = request.params.arguments?.patches;
+
+      if (typeof thing !== 'string' || !thing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      // Basic validation for patches array - could be more thorough
+      if (!Array.isArray(patches) || patches.length === 0) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'patches' argument. Must be a non-empty array of patch operations.");
+      }
+      // Add more specific validation for each patch object if needed
+
+      // db.patch likely requires a RecordId instance
+      const [table, idPart] = thing.split(':');
+      if (!table || !idPart) {
+          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+      }
+      const recordId = new RecordId(table, idPart);
+
+      try {
+        console.log(`Executing patch tool for: ${thing} (using RecordId)`);
+        // Execute the patch using the globally connected db instance
+        // Pass the RecordId instance and the patches array
+        // Assert patches type to satisfy SDK expectations if necessary
+        const result = await db.patch(recordId, patches as any[]); // Using 'any[]' for simplicity, refine if needed
+        console.log(`Patch executed successfully for: ${thing}.`);
+
+        // Return the patched record
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing patch tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB patch failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "upsert": {
+      // Validate input arguments
+      const thing = request.params.arguments?.thing;
+      const data = request.params.arguments?.data;
+
+      if (typeof thing !== 'string' || !thing.includes(':')) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'thing' argument. Must be a full record ID (e.g., 'table:id').");
+      }
+      if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be an object.");
+      }
+
+      // db.upsert likely requires a RecordId instance
+      const [table, idPart] = thing.split(':');
+      if (!table || !idPart) {
+          throw new McpError(ErrorCode.InvalidParams, "Invalid 'thing' format. Must be 'table:id'.");
+      }
+      const recordId = new RecordId(table, idPart);
+
+      try {
+        console.log(`Executing upsert tool for: ${thing} (using RecordId)`);
+        // Execute the upsert using the globally connected db instance
+        // Pass the RecordId instance and assert data type
+        const result = await db.upsert(recordId, data as { [key: string]: unknown });
+        console.log(`Upsert executed successfully for: ${thing}.`);
+
+        // Return the upserted record
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing upsert tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB upsert failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
         );
       }
     }
