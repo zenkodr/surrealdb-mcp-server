@@ -1,8 +1,7 @@
 # SurrealDB MCP Server
 
 <p align="center">
-  <!-- TODO: Add a logo if available -->
-  <!-- <img src="assets/images/surrealdb-mcp-logo.png" width="256" alt="SurrealDB MCP Server Logo" /> -->
+  <img src="assets/images/sdblogo.png" width="256" alt="SurrealDB MCP Server Logo" />
 </p>
 
 <p align="center">
