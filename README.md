@@ -33,8 +33,7 @@ The server exposes the following tools for interacting with SurrealDB:
 ## Installation (Local Development)
 
 ```bash
-# Replace YOUR_USERNAME with your GitHub username or org
-git clone https://github.com/YOUR_USERNAME/surrealdb-mcp-server.git
+git clone https://github.com/nsxdavid/surrealdb-mcp-server.git
 cd surrealdb-mcp-server
 npm install
 ```

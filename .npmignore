@@ -1,0 +1,45 @@
+# Source files (already compiled to build/)
+src/
+
+# Development and test files
+test-connection.js
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+tests/
+__tests__/
+
+# Configuration files
+.eslintrc.cjs
+.prettierrc.json
+eslint.config.js
+tsconfig.json
+
+# Git and GitHub files
+.git/
+.github/
+.gitignore
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation files (except README.md which is included via "files" in package.json)
+docs/
+memory-bank/
+*.md
+!README.md
+
+# Assets (except those needed for the package)
+assets/
+!assets/images/sdblogo.png
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

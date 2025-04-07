@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-*   **Phase 3: Testing & Finalization.** Preparing the server for potential release by adding tests and ensuring the development setup is complete.
+*   **Phase 3: Finalization & Publication.** Preparing the server for release by finalizing configuration and publishing to GitHub and npm.
 
 ## Recent Changes
 
@@ -25,14 +25,18 @@
 *   **Updated ESLint Configuration:** Created `eslint.config.js` to use the new ESLint v9.0.0+ format, replacing the older `.eslintrc.cjs` approach.
 *   **Fixed Linting Issues:** Removed unused imports and added appropriate ESLint disable comments for necessary `any` type usage.
 *   **Verified Tool Functionality:** Manually tested all core tools (`query`, `create`, `select`, `update`, `patch`, `delete`) after code changes to ensure continued functionality.
+*   **Publication Preparation:**
+    *   Published repository to GitHub at https://github.com/nsxdavid/surrealdb-mcp-server
+    *   Updated `package.json` with correct repository information
+    *   Created `.npmignore` file to control which files are published to npm
+    *   Verified build process works correctly
 *   **Updated Memory Bank:** `progress.md` and `activeContext.md` updated.
 
 ## Next Steps
 
-1.  **Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
-2.  **Implement `test` script:** Update `package.json` to run the chosen test framework.
-3.  **(Optional) Implement `dev` script fully:** Currently uses `ts-node`, could switch to `tsx` for potentially better performance/features if needed.
-4.  **Final Review & Cleanup:** Review code, documentation, and configuration before considering release.
+1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.1.
+2.  **(Optional) Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
+3.  **(Optional) Implement `test` script:** Update `package.json` to run the chosen test framework.
 
 ## Active Decisions & Considerations
 

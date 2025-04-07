@@ -38,22 +38,31 @@
     *   Fixed linting issues (removed unused imports, added appropriate ESLint disable comments).
     *   Ran formatter and linter to ensure code quality.
 *   **Post-Change Testing:** Manually tested all core tools (`query`, `create`, `select`, `update`, `patch`, `delete`) after code changes to verify continued functionality.
+*   **GitHub Publication:**
+    *   Published repository to GitHub at https://github.com/nsxdavid/surrealdb-mcp-server
+    *   Updated `package.json` with correct repository information (author, URLs)
+*   **npm Publication:**
+    *   Created `.npmignore` file to control which files are published to npm
+    *   Verified build process works correctly
+    *   Published to npm registry as versions 0.1.0 and 0.1.1
+    *   Updated README with correct GitHub repository URL
 *   Memory Bank core files are initialized and being updated.
 
-## What's Left to Build (Phase 3 - Testing & Finalization)
+## What's Left to Build (Phase 3 - Finalization & Publication)
 
-1.  **Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
-2.  **Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
-3.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
-4.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
+1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.1.
+2.  **(Optional) Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
+3.  **(Optional) Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
+4.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
+5.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
 
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
 *   Phase 2 (Robustness Improvements) is complete.
-*   Phase 3 (Testing & Finalization): Project structure and documentation are complete. Automated tests remain to be implemented.
+*   Phase 3 (Finalization & Publication): Project structure and documentation are complete. GitHub repository is published. Package is published to npm.
 *   Server provides a comprehensive baseline of common SurrealDB operations and is well-documented for potential contributors.
-*   Project is ready for publishing once tests are implemented.
+*   Project is published and ready for use.
 
 ## Known Issues
 
