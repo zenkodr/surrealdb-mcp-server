@@ -25,13 +25,19 @@ import {
 import { Surreal } from 'surrealdb';
 
 // --- Database Configuration ---
-// TODO: Move these to environment variables managed by MCP host settings
-const DB_ENDPOINT = 'ws://localhost:8000';
-const DB_NAMESPACE = 'n8n';
-const DB_DATABASE = 'AIWorld';
-const DB_USER = 'root';
-const DB_PASS = 'root';
+// Read configuration from environment variables provided by MCP host
+const DB_ENDPOINT = process.env.SURREALDB_URL;
+const DB_NAMESPACE = process.env.SURREALDB_NS;
+const DB_DATABASE = process.env.SURREALDB_DB;
+const DB_USER = process.env.SURREALDB_USER;
+const DB_PASS = process.env.SURREALDB_PASS;
 // -----------------------------
+
+// Validate that all required environment variables are set
+if (!DB_ENDPOINT || !DB_NAMESPACE || !DB_DATABASE || !DB_USER || !DB_PASS) {
+  console.error("FATAL ERROR: Missing one or more required SurrealDB environment variables (SURREALDB_URL, SURREALDB_NS, SURREALDB_DB, SURREALDB_USER, SURREALDB_PASS)");
+  process.exit(1);
+}
 
 // Instantiate the SurrealDB client
 const db = new Surreal();
@@ -129,16 +135,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  */
 async function main() {
   try {
+    // Log connection attempt using the environment variable
     console.log(`Attempting to connect to SurrealDB at ${DB_ENDPOINT}...`);
-    // Connect to SurrealDB using the validated method
-    await db.connect(DB_ENDPOINT, {
-      namespace: DB_NAMESPACE,
-      database: DB_DATABASE,
+    // Connect to SurrealDB using environment variables
+    // Use non-null assertion (!) because we've already validated these variables exist
+    await db.connect(DB_ENDPOINT!, {
+      namespace: DB_NAMESPACE!,
+      database: DB_DATABASE!,
       auth: {
-        username: DB_USER,
-        password: DB_PASS,
+        username: DB_USER!,
+        password: DB_PASS!,
       },
     });
+    // Log success using the environment variables
     console.log(`Successfully connected to SurrealDB (NS: ${DB_NAMESPACE}, DB: ${DB_DATABASE})`);
 
     // Start the MCP server communication

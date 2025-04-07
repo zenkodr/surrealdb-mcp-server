@@ -11,20 +11,20 @@
 *   **Configuration:** Re-added server entry to MCP host settings (`cline_mcp_settings.json`).
 *   **Startup Test:** Verified server starts and connects to DB when run via MCP host.
 *   **Tool Test:** Successfully executed the `query` tool (`INFO FOR DB;`) via MCP client.
+*   **Credential Refactoring:** Successfully updated `src/index.ts` to use environment variables (SURREALDB_URL, _NS, _DB, _USER, _PASS) provided by the MCP host configuration. Tested successfully.
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 2 - MCP Server)
 
-1.  **Refactor Credentials:** Move hardcoded DB credentials from `src/index.ts` to environment variables managed by MCP host settings.
-2.  **Implement More Tools:** Add tools for other common DB operations (select, create, update, delete).
-3.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging.
-4.  **Testing:** Add more thorough tests for tools.
+1.  **Implement More Tools:** Add tools for other common DB operations (select, create, update, delete).
+2.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging.
+3.  **Testing:** Add more thorough tests for tools.
 
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
-*   Phase 2: Initial server structure, connection logic, and `query` tool are implemented, built, configured, and tested successfully.
-*   Ready for next steps: Refactoring credentials or implementing more tools.
+*   Phase 2: Initial server structure, connection logic, `query` tool, and credential refactoring are implemented, built, configured, and tested successfully.
+*   Ready for next steps: Implementing more tools.
 
 ## Known Issues
 
