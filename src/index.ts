@@ -216,6 +216,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["thing", "data"]
         }
+      },
+      {
+        name: "insert",
+        description: "Insert multiple records into a table. Use 'create' for single records.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            table: {
+              type: "string",
+              description: "The name of the table to insert records into."
+            },
+            data: {
+              type: "array",
+              description: "An array of objects, each representing a record to insert.",
+              items: {
+                type: "object",
+                additionalProperties: true
+              }
+            }
+          },
+          required: ["table", "data"]
+        }
       }
     ]
   };
@@ -574,6 +596,42 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `SurrealDB upsert failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "insert": {
+      // Validate input arguments
+      const table = request.params.arguments?.table;
+      const data = request.params.arguments?.data;
+
+      if (typeof table !== 'string' || !table.trim()) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      }
+      if (!Array.isArray(data) || data.length === 0 || !data.every(item => typeof item === 'object' && item !== null)) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'data' argument. Must be a non-empty array of objects.");
+      }
+
+      try {
+        console.log(`Executing insert tool for table: ${table} with ${data.length} records`);
+        // Execute the insert using the globally connected db instance
+        // Pass the table name and the array of data objects
+        const result = await db.insert(table, data as { [key: string]: unknown }[]);
+        console.log(`Insert executed successfully for table: ${table}.`);
+
+        // Return the inserted records (db.insert returns an array)
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing insert tool for table ${table}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB insert failed for table ${table}: ${e instanceof Error ? e.message : String(e)}`
         );
       }
     }
