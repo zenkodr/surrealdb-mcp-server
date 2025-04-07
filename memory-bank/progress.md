@@ -15,22 +15,24 @@
 *   **Second Tool (`select`):** Implemented the `select` tool in `src/index.ts`. Required using `new RecordId(table, idPart)` for `db.select()` when selecting a specific record, rather than just the `table:id` string. Tested successfully for both table-wide and specific ID selection.
 *   **Third Tool (`create`):** Implemented the `create` tool in `src/index.ts` using `db.create()`. Tested successfully by creating a record in `mcp_test_data`.
 *   **Fourth Tool (`update`):** Implemented the `update` tool in `src/index.ts`. Similar to `select`, required using `new RecordId(table, idPart)` for `db.update()` instead of the `table:id` string shown in documentation examples. Tested successfully by updating the test record.
+*   **Fifth Tool (`delete`):** Implemented the `delete` tool in `src/index.ts`. Assumed and confirmed need for `new RecordId(table, idPart)` for `db.delete()`. Added handling for empty results when record not found. Tested successfully by deleting the test record and confirming non-existence.
 *   Memory Bank core files are initialized and being updated.
 
 ## What's Left to Build (Phase 2 - MCP Server)
 
-1.  **Implement More Tools:** Add the `delete` tool.
-2.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging.
-3.  **Testing:** Add more thorough tests for tools.
+1.  **Error Handling/Robustness:** Improve error handling and add more comprehensive logging throughout the server.
+2.  **Testing:** Add more thorough tests for all tools, covering edge cases.
+3.  **(Optional) Implement More Tools:** Consider adding tools for `merge`, `patch`, `relate`, etc. if needed.
 
 ## Current Status
 
 *   Phase 1 (Connection Verification) is complete.
-*   Phase 2: `query`, `select`, `create`, and `update` tools are implemented and tested. Credential refactoring complete.
-*   Ready for next steps: Implementing the `delete` tool.
+*   Phase 2: Core CRUD tools (`query`, `select`, `create`, `update`, `delete`) are implemented and tested. Credential refactoring complete.
+*   Basic server functionality is established. Ready for next steps: improving robustness or adding optional tools.
 
 ## Known Issues
 
 *   Initial confusion regarding `signin` parameter names (`user`/`pass` vs. `username`/`password`) in the SDK vs. documentation/errors. Resolved by using `username`/`password` within the `connect` options `auth` object.
 *   Initial confusion regarding the timing/necessity of `db.use()`. Resolved by providing NS/DB directly in `connect` options.
-*   `db.select()` and `db.update()` require a `RecordId` instance (not a string) when targeting a specific record ID, despite documentation examples showing strings. Passing the `table:id` string resulted in unexpected behavior (`[]` return).
+*   `db.select()`, `db.update()`, and `db.delete()` require a `RecordId` instance (not a string) when targeting a specific record ID, despite some documentation examples showing strings. Passing the `table:id` string resulted in unexpected behavior (`[]` return or incorrect results).
+*   Handlers for `select` and `delete` need to check for empty/null results when a record is not found to avoid client-side validation errors.
