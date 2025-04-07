@@ -22,7 +22,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 // SurrealDB Import
-import { Surreal } from 'surrealdb';
+import { Surreal, RecordId } from 'surrealdb'; // Import RecordId
 
 // --- Database Configuration ---
 // Read configuration from environment variables provided by MCP host
@@ -80,8 +80,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["query_string"]
         }
+      },
+      {
+        name: "select",
+        description: "Select all records from a table or a specific record by ID.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            table: {
+              type: "string",
+              description: "The name of the table to select from."
+            },
+            id: {
+              type: "string",
+              description: "Optional: The specific ID of the record to select (e.g., 'user:john'). If omitted, selects all records."
+            }
+          },
+          required: ["table"]
+        }
       }
-      // Add more tools here later (e.g., select, create, update, delete)
+      // Add more tools here later (e.g., create, update, delete)
     ]
   };
 });
@@ -116,6 +134,66 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `SurrealDB query failed: ${e instanceof Error ? e.message : String(e)}`
+        );
+      }
+    }
+
+    case "select": {
+      // Validate input arguments
+      const table = request.params.arguments?.table;
+      const id = request.params.arguments?.id; // Optional
+
+      if (typeof table !== 'string' || !table.trim()) {
+        throw new McpError(ErrorCode.InvalidParams, "Missing or invalid 'table' argument.");
+      }
+      if (id !== undefined && (typeof id !== 'string' || !id.trim())) {
+        // Allow empty string ID? For now, require non-empty if provided.
+        throw new McpError(ErrorCode.InvalidParams, "Invalid 'id' argument. Must be a non-empty string if provided.");
+      }
+
+      // Construct the 'thing' string for SurrealDB (e.g., 'user' or 'user:john')
+      // Ensure ID is correctly formatted if it contains the table prefix already
+      let thing: string;
+      if (id) {
+        // If ID already contains ':', assume it's fully qualified (e.g., 'table:id')
+        // Otherwise, prepend the table name.
+        thing = id.includes(':') ? id : `${table}:${id}`;
+      } else {
+        thing = table; // Select all from table
+      }
+
+      // Determine what to pass to db.select based on whether ID is present
+      // If ID is present, create a RecordId instance.
+      // If not, pass the table name string.
+      let selectTarget: string | RecordId;
+      if (id) {
+        // Extract the ID part if the input 'id' is already 'table:id'
+        const idPart = id.includes(':') ? id.split(':')[1] : id;
+        selectTarget = new RecordId(table, idPart);
+      } else {
+        selectTarget = table;
+      }
+
+      try {
+        // Log the type being passed to db.select
+        console.log(`Executing select tool for target: ${thing} (passing type: ${selectTarget.constructor.name}) using db.select`);
+        // Execute the select using the globally connected db instance
+        const result = await db.select(selectTarget);
+        console.log(`Select executed successfully for target: ${thing}.`);
+
+        // Return the result (db.select returns an array of records)
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
+      } catch (e) {
+        console.error(`Error executing select tool for ${thing}: ${e instanceof Error ? e.message : e}`);
+        // Rethrow as an MCPError for the client
+        throw new McpError(
+          ErrorCode.InternalError,
+          `SurrealDB select failed for ${thing}: ${e instanceof Error ? e.message : String(e)}`
         );
       }
     }
