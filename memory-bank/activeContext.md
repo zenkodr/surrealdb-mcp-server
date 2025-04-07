@@ -25,3 +25,7 @@
 *   The successful connection pattern involves passing `namespace`, `database`, and `auth` within the `connect` options. This will be the primary method used in the MCP server.
 *   The MCP server is now TypeScript-based.
 *   Credentials (`username`/`password`) are currently hardcoded in `src/index.ts` (marked with TODO) and need to be moved to environment variables managed by the MCP host settings for proper deployment.
+
+## Future Considerations
+
+*   **SDK Documentation:** Consider opening a GitHub issue or PR for the `surrealdb.js` SDK documentation regarding the `db.select()` method. The current example for selecting a specific record (`db.select("table:id")`) is misleading as the method requires a `RecordId` instance (`new RecordId(table, idPart)`) according to TypeScript definitions and observed behavior (v1.3.1).
