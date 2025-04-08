@@ -11,7 +11,7 @@
   <a href="https://github.com/modelcontextprotocol/typescript-sdk"><img src="https://img.shields.io/badge/MCP%20SDK-%5E1.6.1-orange" alt="MCP SDK"></a>
 </p>
 
-A Model Context Protocol (MCP) server that provides a standardized interface for AI assistants to interact with a SurrealDB database. This server enables AI systems to query and manipulate data within a configured SurrealDB instance.
+A Model Context Protocol (MCP) server that provides a standardized interface for AI assistants to interact with a [SurrealDB](https://surrealdb.com/) database. This server enables AI systems to query and manipulate data within a configured SurrealDB instance.
 
 > **Note for AI Assistants:** If you are an AI assistant (like Claude, Cline, Copilot, etc.) reading this documentation, please refer to the [llms-install.md](llms-install.md) file for detailed instructions specifically designed for you to help users install and configure this MCP server.
 
@@ -25,12 +25,13 @@ A Model Context Protocol (MCP) server that provides a standardized interface for
 - **🦘 Using Roo Code in VS Code?** → [Go to Roo Code Installation](#roo-code-installation)
 - **🌊 Using Windsurf?** → [Go to Windsurf Installation](#windsurf-installation)
 - **⚡ Using Cursor?** → [Go to Cursor Installation](#cursor-installation)
+- **🔄 Using [n8n](https://n8n.io/)?** → [Go to n8n Integration](#integration-with-n8n)
 
 ## Key Terms
 
 - **MCP Server**: A server that implements the Model Context Protocol, allowing AI assistants to access external tools and resources
 - **MCP Host**: The application (like VS Code with Cline or Claude Desktop) that connects to MCP servers
-- **SurrealDB**: A scalable, distributed, document-graph database with real-time capabilities
+- **[SurrealDB](https://surrealdb.com/)**: A scalable, distributed, document-graph database with real-time capabilities
 
 ## Available Tools
 
@@ -450,6 +451,35 @@ npm test # (Note: Tests need to be implemented)
 ### Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Integration with n8n
+
+You can integrate this SurrealDB MCP Server with [n8n](https://n8n.io/) using the [n8n-nodes-mcp](https://github.com/nerding-io/n8n-nodes-mcp) community node.
+
+### Installation
+
+1. **Install the n8n-nodes-mcp package:**
+
+   ```bash
+   npm install n8n-nodes-mcp
+   ```
+
+2. **Configure n8n to use the custom node:**
+
+   Add the following to your n8n configuration:
+
+   ```bash
+   N8N_CUSTOM_EXTENSIONS="n8n-nodes-mcp"
+   ```
+
+3. **Configure the MCP node in n8n:**
+   
+   - Add the "MCP" node to your workflow
+   - Configure it to connect to your SurrealDB MCP Server
+   - Select the desired operation (query, select, create, etc.)
+   - Configure the operation parameters
+
+For more details, visit the [n8n-nodes-mcp GitHub repository](https://github.com/nerding-io/n8n-nodes-mcp).
 
 ## License
 
