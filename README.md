@@ -32,13 +32,15 @@ The server exposes the following tools for interacting with SurrealDB:
 
 ## Getting Started
 
-This MCP server allows AI assistants like Claude to interact with a SurrealDB database. Here's how to get it up and running:
+This MCP server allows AI assistants like Cline, Claude, and other MCP-compatible assistants to interact with a SurrealDB database. Here's how to get it up and running:
 
-### Quick Start (Recommended)
+### Quick Start
+
+#### For Claude Desktop App (Recommended)
 
 1. **Configure your AI assistant to use the server:**
    
-   Add the server configuration to your AI assistant's MCP settings file (e.g., `cline_mcp_settings.json` for the VS Code extension or `claude_desktop_config.json` for the desktop app).
+   Add the server configuration to your Claude Desktop App's MCP settings file (`claude_desktop_config.json`).
 
    ```json
    {
@@ -64,6 +66,42 @@ This MCP server allows AI assistants like Claude to interact with a SurrealDB da
    ```
 
    > **Note:** Using the `npx` command as shown above means the MCP client will automatically download and run the package from npm when needed. No manual installation is required.
+
+#### For Cline VS Code Extension (Windows Users)
+
+Due to known issues with the `npx` approach in Cline (especially on Windows), you should use one of the following methods:
+
+1. **Install the package globally first:**
+
+   ```bash
+   npm install -g surrealdb-mcp-server
+   ```
+
+   Then configure Cline to use the installed package:
+
+   ```json
+   {
+     "mcpServers": {
+       "surrealdb": {
+         "command": "C:\\Program Files\\nodejs\\node.exe",
+         "args": [
+           "C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm\\node_modules\\surrealdb-mcp-server\\build\\index.js"
+         ],
+         "env": {
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "your_namespace",
+           "SURREALDB_DB": "your_database",
+           "SURREALDB_USER": "your_db_user",
+           "SURREALDB_PASS": "your_db_password"
+         },
+         "disabled": false,
+         "autoApprove": []
+       }
+     }
+   }
+   ```
+
+   > **Note:** Replace `YOUR_USERNAME` with your actual Windows username in the path.
 
 2. **Start using the tools with your AI assistant:**
    
