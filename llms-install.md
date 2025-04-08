@@ -1,29 +1,65 @@
 # SurrealDB MCP Server Installation Guide (for AI Assistants)
 
-This document provides the necessary information for AI assistants like Cline to perform automated installation and configuration of the SurrealDB MCP Server. Cline and other MCP-compatible assistants can read this file to understand how to properly set up the server for users.
+## IMPORTANT: READ THIS FIRST
 
-## Installation Methods
+This document is **specifically for AI assistants** like Cline and Claude. It contains instructions for YOU (the AI) on how to automatically install and configure the SurrealDB MCP Server for users with minimal user intervention.
 
-### For Claude Desktop App
+## What is SurrealDB MCP Server?
 
-Use `npx` for installation to avoid global package clutter.
+SurrealDB MCP Server is a Model Context Protocol (MCP) server that allows you (an AI assistant) to interact with a SurrealDB database. It enables you to query and manipulate data within a configured SurrealDB instance on behalf of the user.
 
--   **Package Name:** `surrealdb-mcp-server`
+## Installation Decision Tree
+
+As an AI assistant, you should first determine which AI platform you are running on:
+
+- If you are **Cline in VS Code** → Follow the [Cline-specific instructions](#cline-specific-instructions)
+- If you are **Claude Desktop App** → Follow the [Claude-specific instructions](#claude-specific-instructions)
+- If you are **GitHub Copilot in VS Code** → Follow the [Copilot-specific instructions](#copilot-specific-instructions)
+- If you are **Roo Code in VS Code** → Follow the [Roo Code-specific instructions](#roo-code-specific-instructions)
+- If you are **Windsurf** → Follow the [Windsurf-specific instructions](#windsurf-specific-instructions)
+- If you are **Cursor** → Follow the [Cursor-specific instructions](#cursor-specific-instructions)
+
+## Required Environment Variables
+
+You will need to collect the following SurrealDB connection information from the user. Try to make this process as seamless as possible by asking direct questions:
+
+1. **`SURREALDB_URL`**:
+   * Ask: "What is the WebSocket endpoint URL for your SurrealDB instance? (e.g., ws://localhost:8000)"
+   * Default suggestion if user is unsure: `ws://localhost:8000`
+
+2. **`SURREALDB_NS`**:
+   * Ask: "What namespace in SurrealDB do you want to connect to? (e.g., test)"
+   * Default suggestion if user is unsure: `test`
+
+3. **`SURREALDB_DB`**:
+   * Ask: "What database within that namespace do you want to connect to? (e.g., mydatabase)"
+   * Default suggestion if user is unsure: `mydatabase`
+
+4. **`SURREALDB_USER`**:
+   * Ask: "What username should be used for authentication to SurrealDB? (e.g., root)"
+   * Default suggestion if user is unsure: `root`
+
+5. **`SURREALDB_PASS`**:
+   * Ask: "What is the password for that SurrealDB user?"
+   * Default suggestion if user is unsure: `root` (only suggest this for local development)
+
+## Cline-Specific Instructions
 
 ### For Cline VS Code Extension (Especially on Windows)
 
-Due to known issues with the `npx` approach in Cline (especially on Windows), you should use the following method:
+Due to known issues with the `npx` approach in Cline (especially on Windows), you (the AI) should:
 
-1. **Install the package globally first:**
-
+1. **Instruct the user to install the package globally with a single command:**
    ```bash
    npm install -g surrealdb-mcp-server
    ```
 
-2. **Configure Cline to use the installed package:**
+2. **Automatically generate the complete configuration:**
+   - Determine the user's Windows username from context if possible
+   - Create the full configuration JSON with all environment variables filled in
+   - Provide the exact file path where this should be saved
 
-   For Windows users, use the full path to node.exe and the installed package:
-
+   Example configuration:
    ```json
    {
      "mcpServers": {
@@ -33,11 +69,11 @@ Due to known issues with the `npx` approach in Cline (especially on Windows), yo
            "C:\\Users\\USERNAME\\AppData\\Roaming\\npm\\node_modules\\surrealdb-mcp-server\\build\\index.js"
          ],
          "env": {
-           "SURREALDB_URL": "PLACEHOLDER_URL",
-           "SURREALDB_NS": "PLACEHOLDER_NS",
-           "SURREALDB_DB": "PLACEHOLDER_DB",
-           "SURREALDB_USER": "PLACEHOLDER_USER",
-           "SURREALDB_PASS": "PLACEHOLDER_PASS"
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "test",
+           "SURREALDB_DB": "mydatabase",
+           "SURREALDB_USER": "root",
+           "SURREALDB_PASS": "root"
          },
          "disabled": false,
          "autoApprove": []
@@ -46,22 +82,67 @@ Due to known issues with the `npx` approach in Cline (especially on Windows), yo
    }
    ```
 
-   For macOS/Linux users, use the full path to the installed package:
+3. **Provide clear, one-step instructions:**
+   - Tell the user exactly where to save this configuration
+   - Default location: `%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
+   - Instruct them to restart VS Code after saving
 
+4. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
+
+### For Cline on macOS/Linux
+
+For macOS/Linux users, follow the same approach but with the appropriate paths:
+
+```json
+{
+  "mcpServers": {
+    "surrealdb": {
+      "command": "node",
+      "args": [
+        "/usr/local/lib/node_modules/surrealdb-mcp-server/build/index.js"
+      ],
+      "env": {
+        "SURREALDB_URL": "ws://localhost:8000",
+        "SURREALDB_NS": "test",
+        "SURREALDB_DB": "mydatabase",
+        "SURREALDB_USER": "root",
+        "SURREALDB_PASS": "root"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+## Claude-Specific Instructions
+
+### For Claude Desktop App
+
+The Claude Desktop App works well with the `npx` approach. You (the AI) should:
+
+1. **Generate the complete configuration automatically:**
+   - Create the full configuration JSON with all environment variables filled in
+   - Provide the exact file path where this should be saved based on the user's OS
+
+   Example configuration:
    ```json
    {
      "mcpServers": {
        "surrealdb": {
-         "command": "node",
+         "command": "npx",
          "args": [
-           "/usr/local/lib/node_modules/surrealdb-mcp-server/build/index.js"
+           "-y",
+           "surrealdb-mcp-server"
          ],
          "env": {
-           "SURREALDB_URL": "PLACEHOLDER_URL",
-           "SURREALDB_NS": "PLACEHOLDER_NS",
-           "SURREALDB_DB": "PLACEHOLDER_DB",
-           "SURREALDB_USER": "PLACEHOLDER_USER",
-           "SURREALDB_PASS": "PLACEHOLDER_PASS"
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "test",
+           "SURREALDB_DB": "mydatabase",
+           "SURREALDB_USER": "root",
+           "SURREALDB_PASS": "root"
          },
          "disabled": false,
          "autoApprove": []
@@ -70,88 +151,271 @@ Due to known issues with the `npx` approach in Cline (especially on Windows), yo
    }
    ```
 
-## Required Environment Variables
+2. **Provide clear, one-step instructions:**
+   - Tell the user exactly where to save this configuration based on their OS:
+     - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+     - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+     - Linux: `~/.config/Claude/claude_desktop_config.json`
+   - Instruct them to restart the Claude Desktop App after saving
 
-The server requires the following environment variables to connect to a SurrealDB instance. As an AI assistant, you must prompt the user for these values during the installation process:
+3. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
 
-1.  **`SURREALDB_URL`**:
-    *   **What to ask the user:** "What is the WebSocket endpoint URL for your SurrealDB instance?"
-    *   **Example to provide:** `ws://localhost:8000` (for local), `wss://cloud.surrealdb.com` (for SurrealDB Cloud)
-    *   **Help information:** Tell the user they can find this in their SurrealDB startup logs or their SurrealDB Cloud deployment details.
+## Troubleshooting Guide
 
-2.  **`SURREALDB_NS`**:
-    *   **What to ask the user:** "What namespace in SurrealDB do you want to connect to?"
-    *   **Example to provide:** `test`
-    *   **Help information:** Explain that this is the namespace they defined during their SurrealDB setup.
+If you encounter issues during installation, try these solutions:
 
-3.  **`SURREALDB_DB`**:
-    *   **What to ask the user:** "What database within that namespace do you want to connect to?"
-    *   **Example to provide:** `mydatabase`
-    *   **Help information:** Explain that this is the database they defined during their SurrealDB setup.
+### "Cannot find module" Error
 
-4.  **`SURREALDB_USER`**:
-    *   **What to ask the user:** "What username should be used for authentication to SurrealDB?"
-    *   **Example to provide:** `root`, `ns_admin`, `db_user`, `api_scope_user`
-    *   **Help information:** Explain that this can be a Root, Namespace, Database, or Scope user defined in their SurrealDB instance.
+If you see an error like "Cannot find module 'surrealdb-mcp-server'":
 
-5.  **`SURREALDB_PASS`**:
-    *   **What to ask the user:** "What is the password for that SurrealDB user?"
-    *   **Example to provide:** `your_secure_password`
-    *   **Help information:** Remind the user to use the correct password for the specified user.
+1. Check if the package is installed globally: `npm list -g surrealdb-mcp-server`
+2. Verify the path in your configuration matches the actual installation path
+3. Try reinstalling: `npm install -g surrealdb-mcp-server`
 
-## MCP Host Configuration Templates
+### Connection Errors
 
-As an AI assistant, you should use one of the following configuration templates based on the user's environment and preferences. Replace the PLACEHOLDER values with the actual values provided by the user.
+If you see "Failed to connect to SurrealDB":
 
-### For Claude Desktop App (using NPX)
+1. Check if SurrealDB is running: `surreal start --log debug`
+2. Verify the connection URL, namespace, database, and credentials
+3. Ensure the SurrealDB instance is accessible from the path specified
 
-```json
-{
-  "mcpServers": {
-    "surrealdb": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "surrealdb-mcp-server"
-      ],
-      "env": {
-        "SURREALDB_URL": "PLACEHOLDER_URL",
-        "SURREALDB_NS": "PLACEHOLDER_NS",
-        "SURREALDB_DB": "PLACEHOLDER_DB",
-        "SURREALDB_USER": "PLACEHOLDER_USER",
-        "SURREALDB_PASS": "PLACEHOLDER_PASS"
-      },
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}
-```
+## Copilot-Specific Instructions
 
-### For Cline VS Code Extension on Windows (using globally installed package)
+### For GitHub Copilot in VS Code
 
-```json
-{
-  "mcpServers": {
-    "surrealdb": {
-      "command": "C:\\Program Files\\nodejs\\node.exe",
-      "args": [
-        "C:\\Users\\USERNAME\\AppData\\Roaming\\npm\\node_modules\\surrealdb-mcp-server\\build\\index.js"
-      ],
-      "env": {
-        "SURREALDB_URL": "PLACEHOLDER_URL",
-        "SURREALDB_NS": "PLACEHOLDER_NS",
-        "SURREALDB_DB": "PLACEHOLDER_DB",
-        "SURREALDB_USER": "PLACEHOLDER_USER",
-        "SURREALDB_PASS": "PLACEHOLDER_PASS"
-      },
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}
-```
+GitHub Copilot in VS Code uses a different configuration approach for MCP servers. You (the AI) should:
 
-Remember to replace:
-- USERNAME with the user's actual Windows username
-- All PLACEHOLDER values with the actual values provided by the user
+1. **Create a workspace-specific configuration file:**
+   - Instruct the user to create a file at `.vscode/mcp.json` in their workspace
+   - Generate the configuration with input variables for secure credential handling
+
+   Example configuration:
+   ```json
+   {
+     "inputs": [
+       {
+         "type": "promptString",
+         "id": "surrealdb-url",
+         "description": "SurrealDB URL",
+         "default": "ws://localhost:8000"
+       },
+       {
+         "type": "promptString",
+         "id": "surrealdb-ns",
+         "description": "SurrealDB Namespace"
+       },
+       {
+         "type": "promptString",
+         "id": "surrealdb-db",
+         "description": "SurrealDB Database"
+       },
+       {
+         "type": "promptString",
+         "id": "surrealdb-user",
+         "description": "SurrealDB Username"
+       },
+       {
+         "type": "promptString",
+         "id": "surrealdb-pass",
+         "description": "SurrealDB Password",
+         "password": true
+       }
+     ],
+     "servers": {
+       "surrealdb": {
+         "type": "stdio",
+         "command": "npx",
+         "args": [
+           "-y",
+           "surrealdb-mcp-server"
+         ],
+         "env": {
+           "SURREALDB_URL": "${input:surrealdb-url}",
+           "SURREALDB_NS": "${input:surrealdb-ns}",
+           "SURREALDB_DB": "${input:surrealdb-db}",
+           "SURREALDB_USER": "${input:surrealdb-user}",
+           "SURREALDB_PASS": "${input:surrealdb-pass}"
+         }
+       }
+     }
+   }
+   ```
+
+2. **Explain the benefits of this approach:**
+   - VS Code will securely prompt for and store the credentials
+   - The configuration is workspace-specific, making it ideal for project-based setups
+   - Input variables with defaults simplify the configuration process
+
+3. **Provide verification instructions:**
+   - Tell the user to open GitHub Copilot Chat in VS Code
+   - Instruct them to select "Agent" mode from the dropdown
+   - Have them click the "Tools" button to see available tools
+   - They should see SurrealDB tools in the list
+
+4. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
+
+## Roo Code-Specific Instructions
+
+### For Roo Code in VS Code
+
+Roo Code in VS Code uses a similar configuration approach to Cline. You (the AI) should:
+
+1. **Instruct the user to install the package globally:**
+   ```bash
+   npm install -g surrealdb-mcp-server
+   ```
+
+2. **Guide the user to access MCP Settings:**
+   - Tell them to click the MCP icon in the top navigation of the Roo Code pane
+   - Instruct them to select "Edit MCP Settings" to open the configuration file
+
+3. **Generate the complete configuration automatically:**
+   - Create the full configuration JSON with all environment variables filled in
+   - Provide the exact configuration to add
+
+   Example configuration:
+   ```json
+   {
+     "mcpServers": {
+       "surrealdb": {
+         "command": "C:\\Program Files\\nodejs\\node.exe",
+         "args": [
+           "C:\\Users\\USERNAME\\AppData\\Roaming\\npm\\node_modules\\surrealdb-mcp-server\\build\\index.js"
+         ],
+         "env": {
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "test",
+           "SURREALDB_DB": "mydatabase",
+           "SURREALDB_USER": "root",
+           "SURREALDB_PASS": "root"
+         },
+         "disabled": false,
+         "autoApprove": []
+       }
+     }
+   }
+   ```
+
+4. **Provide clear verification instructions:**
+   - Tell the user to restart VS Code after saving
+   - Instruct them to open Roo Code in VS Code
+   - Have them click the MCP icon to see available servers
+   - They should see "surrealdb" in the list
+
+5. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
+
+## Windsurf-Specific Instructions
+
+### For Windsurf
+
+Windsurf uses a different configuration format for MCP servers. You (the AI) should:
+
+1. **Instruct the user to install the package globally:**
+   ```bash
+   npm install -g surrealdb-mcp-server
+   ```
+
+2. **Guide the user to access MCP Settings in Windsurf:**
+   - Tell them to open Windsurf on their system
+   - Navigate to the Settings page
+   - Go to the Cascade tab
+   - Find the Model Context Protocol (MCP) Servers section
+   - Click on "View raw config" to open the configuration file (typically at `~/.codeium/windsurf/mcp_config.json`)
+
+3. **Generate the complete configuration automatically:**
+   - Create the full configuration JSON with all environment variables filled in
+   - Provide the exact configuration to add
+
+   Example configuration:
+   ```json
+   {
+     "servers": [
+       {
+         "name": "surrealdb",
+         "command": "node",
+         "args": [
+           "/path/to/global/node_modules/surrealdb-mcp-server/build/index.js"
+         ],
+         "env": {
+           "SURREALDB_URL": "ws://localhost:8000",
+           "SURREALDB_NS": "test",
+           "SURREALDB_DB": "mydatabase",
+           "SURREALDB_USER": "root",
+           "SURREALDB_PASS": "root"
+         }
+       }
+     ]
+   }
+   ```
+
+4. **Provide clear verification instructions:**
+   - Tell the user to restart Windsurf after saving
+   - Instruct them to open Cascade in Windsurf
+   - They should see SurrealDB tools available in the tools list
+
+5. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
+
+## Cursor-Specific Instructions
+
+### For Cursor
+
+Cursor has its own interface for adding MCP servers. You (the AI) should:
+
+1. **Instruct the user to install the package globally:**
+   ```bash
+   npm install -g surrealdb-mcp-server
+   ```
+
+2. **Guide the user to access MCP Settings in Cursor:**
+   - Tell them to open Cursor
+   - Go to Settings > Cursor Settings
+   - Find the MCP Servers option and enable it
+   - Click on "Add New MCP Server"
+
+3. **Generate the complete configuration automatically:**
+   - Create the full configuration JSON with all environment variables filled in
+   - Provide the exact configuration to add
+
+   Example configuration:
+   ```json
+   {
+     "name": "surrealdb",
+     "command": "node",
+     "args": [
+       "/path/to/global/node_modules/surrealdb-mcp-server/build/index.js"
+     ],
+     "env": {
+       "SURREALDB_URL": "ws://localhost:8000",
+       "SURREALDB_NS": "test",
+       "SURREALDB_DB": "mydatabase",
+       "SURREALDB_USER": "root",
+       "SURREALDB_PASS": "root"
+     }
+   }
+   ```
+
+4. **Provide clear verification instructions:**
+   - Tell the user to restart Cursor after saving
+   - Instruct them to open Cursor Chat
+   - They should see SurrealDB tools available in the tools list
+
+5. **Verify the installation automatically:**
+   - After the user confirms they've completed the steps, test the connection by using the MCP server
+   - Try a simple query like `SELECT * FROM information_schema.tables LIMIT 1`
+
+### Common Issues Across All Platforms
+
+If the npx approach doesn't work:
+
+1. Always use the global installation method
+2. Use the full path to node.exe and the installed package on Windows
+3. Make sure to use the correct username in the path
