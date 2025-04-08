@@ -456,6 +456,8 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 You can integrate this SurrealDB MCP Server with [n8n](https://n8n.io/) using the [n8n-nodes-mcp](https://github.com/nerding-io/n8n-nodes-mcp) community node.
 
+**NOTE: Currently only the [self-hosted (Docker) version of n8n](https://docs.n8n.io/hosting/installation/docker/) supports community nodes. There is no option for MCP Servers in the n8n cloud version (yet?).**
+
 ### Installation
 
 1. **Install the n8n-nodes-mcp package:**
