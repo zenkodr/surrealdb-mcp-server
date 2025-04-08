@@ -17,14 +17,30 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
-  ListToolsRequestSchema, // Added
-  CallToolRequestSchema, // Added
-  McpError, // Added
-  ErrorCode, // Added
+  ListToolsRequestSchema,
+  CallToolRequestSchema,
+  ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
+  ListPromptsRequestSchema,
+  McpError,
+  ErrorCode,
 } from "@modelcontextprotocol/sdk/types.js";
 
 // SurrealDB Import
 import { Surreal, RecordId } from "surrealdb"; // Import RecordId
+import { inspect } from "util";
+
+// Custom logger that writes to stderr to avoid interfering with JSON-RPC communication
+const logger = {
+  info: (...args: unknown[]) => {
+    const timestamp = new Date().toISOString();
+    process.stderr.write(`${timestamp} [surrealdb] [info] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`);
+  },
+  error: (...args: unknown[]) => {
+    const timestamp = new Date().toISOString();
+    process.stderr.write(`${timestamp} [surrealdb] [error] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`);
+  }
+};
 
 // --- Database Configuration ---
 // Read configuration from environment variables provided by MCP host
@@ -37,7 +53,7 @@ const DB_PASS = process.env.SURREALDB_PASS;
 
 // Validate that all required environment variables are set
 if (!DB_ENDPOINT || !DB_NAMESPACE || !DB_DATABASE || !DB_USER || !DB_PASS) {
-  console.error(
+  logger.error(
     "FATAL ERROR: Missing one or more required SurrealDB environment variables (SURREALDB_URL, SURREALDB_NS, SURREALDB_DB, SURREALDB_USER, SURREALDB_PASS)"
   );
   process.exit(1);
@@ -54,20 +70,46 @@ const db = new Surreal();
 const server = new Server(
   {
     name: "surrealdb-mcp-server",
-    version: "0.1.6", // Updated to match current package version
+    version: "0.1.7", // Updated to match current package version
   },
   {
     // Declare tool capability
     capabilities: {
       tools: {}, // This enables tool-related handlers like ListTools and CallTool
+      resources: {}, // Add resources capability
     },
   }
 );
 
 // --- MCP Request Handlers ---
 
+// Handler for listing resources (required by MCP protocol)
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  logger.info("Handling ListResources request");
+  return {
+    resources: [], // Return empty array as we don't have any resources
+  };
+});
+
+// Handler for listing resource templates (required by MCP protocol)
+server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
+  logger.info("Handling ListResourceTemplates request");
+  return {
+    resourceTemplates: [], // Return empty array as we don't have any resource templates
+  };
+});
+
+// Handler for listing prompts (required by MCP protocol)
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  logger.info("Handling ListPrompts request");
+  return {
+    prompts: [], // Return empty array as we don't have any prompts
+  };
+});
+
 // Handler for listing available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  logger.info("Handling ListTools request");
   return {
     tools: [
       {
@@ -309,10 +351,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       try {
-        console.log(`Executing query tool with: ${queryString}`);
+        logger.info(`Executing query tool with: ${queryString}`);
         // Execute the query using the globally connected db instance
         const result = await db.query(queryString);
-        console.log("Query executed successfully via tool.");
+        logger.info("Query executed successfully via tool.");
 
         // Return the result (SurrealDB returns an array of results per query)
         return {
@@ -325,7 +367,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing query tool:`, e); // Log full error object
+        logger.error(`Error executing query tool:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -378,12 +420,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       try {
         // Log the type being passed to db.select
-        console.log(
+        logger.info(
           `Executing select tool for target: ${thing} (passing type: ${selectTarget.constructor.name}) using db.select`
         );
         // Execute the select using the globally connected db instance
         const result = await db.select(selectTarget);
-        console.log(`Select executed successfully for target: ${thing}.`);
+        logger.info(`Select executed successfully for target: ${thing}.`);
 
         // Check if result is empty (record not found)
         const responseText =
@@ -400,7 +442,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing select tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing select tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -428,7 +470,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       try {
-        console.log(`Executing create tool for table: ${table}`);
+        logger.info(`Executing create tool for table: ${table}`);
         // Execute the create using the globally connected db instance
         // We pass the table name and the data object directly
         // Assert data type to satisfy TypeScript's index signature requirement
@@ -436,7 +478,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           table,
           data as { [key: string]: unknown }
         );
-        console.log(`Create executed successfully for table: ${table}.`);
+        logger.info(`Create executed successfully for table: ${table}.`);
 
         // Return the created record(s) (db.create returns an array)
         return {
@@ -448,7 +490,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing create tool for table ${table}:`, e); // Log full error object
+        logger.error(`Error executing create tool for table ${table}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -487,14 +529,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const recordId = new RecordId(table, idPart);
 
       try {
-        console.log(`Executing update tool for: ${thing} (using RecordId)`);
+        logger.info(`Executing update tool for: ${thing} (using RecordId)`);
         // Execute the update using the globally connected db instance
         // Pass the RecordId instance and assert data type
         const result = await db.update(
           recordId,
           data as { [key: string]: unknown }
         );
-        console.log(`Update executed successfully for: ${thing}.`);
+        logger.info(`Update executed successfully for: ${thing}.`);
 
         // Return the updated record (db.update returns the updated record or array if multiple)
         // Note: The SDK documentation for update is slightly ambiguous on single vs array return,
@@ -508,7 +550,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing update tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing update tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -539,11 +581,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const recordId = new RecordId(table, idPart);
 
       try {
-        console.log(`Executing delete tool for: ${thing} (using RecordId)`);
+        logger.info(`Executing delete tool for: ${thing} (using RecordId)`);
         // Execute the delete using the globally connected db instance
         // Pass the RecordId instance
         const result = await db.delete(recordId);
-        console.log(`Delete executed successfully for: ${thing}.`);
+        logger.info(`Delete executed successfully for: ${thing}.`);
 
         // Check if result is empty (record might not have existed)
         // db.delete returns the deleted record(s) or potentially undefined/empty array if not found
@@ -561,7 +603,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing delete tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing delete tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -599,14 +641,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const recordId = new RecordId(table, idPart);
 
       try {
-        console.log(`Executing merge tool for: ${thing} (using RecordId)`);
+        logger.info(`Executing merge tool for: ${thing} (using RecordId)`);
         // Execute the merge using the globally connected db instance
         // Pass the RecordId instance and assert data type
         const result = await db.merge(
           recordId,
           data as { [key: string]: unknown }
         );
-        console.log(`Merge executed successfully for: ${thing}.`);
+        logger.info(`Merge executed successfully for: ${thing}.`);
 
         // Return the merged record
         return {
@@ -618,7 +660,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing merge tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing merge tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -658,13 +700,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const recordId = new RecordId(table, idPart);
 
       try {
-        console.log(`Executing patch tool for: ${thing} (using RecordId)`);
+        logger.info(`Executing patch tool for: ${thing} (using RecordId)`);
         // Execute the patch using the globally connected db instance
         // Pass the RecordId instance and the patches array
         // Use a more generic type assertion to avoid compatibility issues
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = await db.patch(recordId, patches as any);
-        console.log(`Patch executed successfully for: ${thing}.`);
+        logger.info(`Patch executed successfully for: ${thing}.`);
 
         // Return the patched record
         return {
@@ -676,7 +718,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing patch tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing patch tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -714,14 +756,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const recordId = new RecordId(table, idPart);
 
       try {
-        console.log(`Executing upsert tool for: ${thing} (using RecordId)`);
+        logger.info(`Executing upsert tool for: ${thing} (using RecordId)`);
         // Execute the upsert using the globally connected db instance
         // Pass the RecordId instance and assert data type
         const result = await db.upsert(
           recordId,
           data as { [key: string]: unknown }
         );
-        console.log(`Upsert executed successfully for: ${thing}.`);
+        logger.info(`Upsert executed successfully for: ${thing}.`);
 
         // Return the upserted record
         return {
@@ -733,7 +775,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing upsert tool for ${thing}:`, e); // Log full error object
+        logger.error(`Error executing upsert tool for ${thing}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -765,7 +807,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       try {
-        console.log(
+        logger.info(
           `Executing insert tool for table: ${table} with ${data.length} records`
         );
         // Execute the insert using the globally connected db instance
@@ -774,7 +816,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           table,
           data as { [key: string]: unknown }[]
         );
-        console.log(`Insert executed successfully for table: ${table}.`);
+        logger.info(`Insert executed successfully for table: ${table}.`);
 
         // Return the inserted records (db.insert returns an array)
         return {
@@ -786,7 +828,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(`Error executing insert tool for table ${table}:`, e); // Log full error object
+        logger.error(`Error executing insert tool for table ${table}:`, e); // Log full error object
         // Rethrow as an MCPError for the client
         throw new McpError(
           ErrorCode.InternalError,
@@ -850,13 +892,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
 
       try {
-        console.log(
+        logger.info(
           `Executing insertRelation tool: ${fromThing} -> ${relationName} -> ${toThing}`
         );
         // Execute the insertRelation using the globally connected db instance
         // Pass the relation table name and the constructed data object
         const result = await db.insertRelation(relationName, relationData);
-        console.log(`insertRelation executed successfully.`);
+        logger.info(`insertRelation executed successfully.`);
 
         // Return the created relation record(s) (db.insertRelation returns an array)
         return {
@@ -868,7 +910,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       } catch (e) {
-        console.error(
+        logger.error(
           `Error executing insertRelation tool (${fromThing} -> ${relationName} -> ${toThing}):`,
           e
         ); // Log full error object
@@ -898,7 +940,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   try {
     // Log connection attempt using the environment variable
-    console.log(`Attempting to connect to SurrealDB at ${DB_ENDPOINT}...`);
+    logger.info(`Attempting to connect to SurrealDB at ${DB_ENDPOINT}...`);
     // Connect to SurrealDB using environment variables
     // Use non-null assertion (!) because we've already validated these variables exist
     await db.connect(DB_ENDPOINT!, {
@@ -910,26 +952,26 @@ async function main() {
       },
     });
     // Log success using the environment variables
-    console.log(
+    logger.info(
       `Successfully connected to SurrealDB (NS: ${DB_NAMESPACE}, DB: ${DB_DATABASE})`
     );
 
     // Start the MCP server communication
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("SurrealDB MCP Server connected via stdio transport.");
+    logger.info("SurrealDB MCP Server connected via stdio transport.");
   } catch (error) {
-    console.error("--- FATAL ERROR ---");
+    logger.error("--- FATAL ERROR ---");
     if (error instanceof Error) {
-      console.error(
+      logger.error(
         "Failed to connect to SurrealDB or start MCP server:",
         error.message
       );
-      console.error(error.stack);
+      logger.error(error.stack || "No stack trace available");
     } else {
-      console.error("An unknown error occurred during startup:", error);
+      logger.error("An unknown error occurred during startup:", error);
     }
-    console.error("-------------------");
+    logger.error("-------------------");
     // Ensure DB connection is closed if it was partially opened or if error occurred after connect
     await db.close();
     process.exit(1); // Exit if we can't connect to the DB or start the server
@@ -938,19 +980,19 @@ async function main() {
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
-  console.log("\nCaught interrupt signal (Ctrl+C).");
-  console.log("Closing SurrealDB connection...");
+  logger.info("\nCaught interrupt signal (Ctrl+C).");
+  logger.info("Closing SurrealDB connection...");
   await db.close();
-  console.log("Database connection closed.");
-  console.log("Shutting down MCP server...");
+  logger.info("Database connection closed.");
+  logger.info("Shutting down MCP server...");
   await server.close(); // Close the MCP server itself
-  console.log("MCP server shut down.");
+  logger.info("MCP server shut down.");
   process.exit(0);
 });
 
 // Start the main application logic
 main().catch((error) => {
   // This catch is mainly for unexpected errors not caught within main's try/catch
-  console.error("Unhandled error in main execution:", error);
+  logger.error("Unhandled error in main execution:", error);
   process.exit(1);
 });
