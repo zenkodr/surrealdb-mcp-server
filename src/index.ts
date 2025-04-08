@@ -13,6 +13,10 @@
  * - Creating graph relations between records
  */
 
+// Redirect console.log and console.error to ensure no logs go to stdout
+console.log = (...args) => process.stderr.write(args.join(' ') + '\n');
+console.error = (...args) => process.stderr.write(args.join(' ') + '\n');
+
 // MCP SDK Imports
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -77,6 +81,7 @@ const server = new Server(
     capabilities: {
       tools: {}, // This enables tool-related handlers like ListTools and CallTool
       resources: {}, // Add resources capability
+      prompts: {}, // Add prompts capability
     },
   }
 );
@@ -103,7 +108,7 @@ server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
 server.setRequestHandler(ListPromptsRequestSchema, async () => {
   logger.info("Handling ListPrompts request");
   return {
-    prompts: [], // Return empty array as we don't have any prompts
+    prompts: [], // Return an empty array as we don't have any prompts
   };
 });
 
