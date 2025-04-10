@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-*   **Phase 3: Finalization & Publication.** Preparing the server for release by finalizing configuration and publishing to GitHub and npm.
+*   **Phase 3: Finalization & Publication.** The server has been published to GitHub and npm (currently at version 0.1.8). Focus is now on potential testing implementation and further improvements.
 
 ## Recent Changes
 
@@ -31,16 +31,24 @@
     *   Created `.npmignore` file to control which files are published to npm
     *   Verified build process works correctly
 *   **Publication:**
-    *   Published to npm as versions 0.1.0, 0.1.1, and 0.1.2
+    *   Published to npm as versions 0.1.0 through 0.1.8
     *   Improved README with clearer installation and usage instructions
     *   Fixed JSON examples in README to remove comments
+    *   Added support for additional AI assistants (Roo Code, Windsurf, Cursor)
+    *   Added n8n integration documentation
+*   **Additional Improvements:**
+    *   Added support for the 'prompts' capability in v0.1.8
+    *   Implemented handler for 'ListPromptsRequestSchema'
+    *   Redirected logs to stderr for better debugging
+    *   Added missing MCP protocol handlers
 *   **Updated Memory Bank:** `progress.md` and `activeContext.md` updated.
 
 ## Next Steps
 
-1.  **Create GitHub Release:** Create a release on GitHub with release notes for v0.1.2.
+1.  **✅ Create GitHub Releases:** GitHub releases have been created for versions v0.1.2, v0.1.3, v0.1.5, v0.1.6, and v0.1.8.
 2.  **(Optional) Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
 3.  **(Optional) Implement `test` script:** Update `package.json` to run the chosen test framework.
+4.  **(Optional) Update Documentation:** Ensure documentation reflects the latest changes, particularly the new 'prompts' capability added in v0.1.8.
 
 ## Active Decisions & Considerations
 
