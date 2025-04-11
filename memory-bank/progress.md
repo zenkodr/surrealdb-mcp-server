@@ -65,11 +65,26 @@
 ## What's Left to Build (Phase 3 - Testing & Future Improvements)
 
 1.  **✅ Create GitHub Releases:** GitHub releases have been created for versions v0.1.2, v0.1.3, v0.1.5, v0.1.6, and v0.1.8.
-2.  **(Optional) Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
-3.  **(Optional) Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
-4.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
-5.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
-6.  **(Optional) Update Documentation:** Ensure documentation reflects the latest changes, particularly the new 'prompts' capability added in v0.1.8.
+2.  **Implement Schema Inspection Prompts:** Enhance the server with prompts that provide database structure information:
+    * **Phase 1 Prompts:**
+      * `database_schema` - Provides complete database schema via `INFO FOR DB`
+      * `table_schema` - Returns schema for a specific table via `INFO FOR TABLE <table>`
+      * `list_tables` - Lists all tables in the database
+    * **Implementation Approach:**
+      * Enhance the `ListPromptsRequestSchema` handler to return the available prompts
+      * Implement the `GetPromptRequestSchema` handler to generate prompt content
+      * Execute appropriate SurrealQL queries and return raw results
+      * Format results as context-rich messages for AI assistants
+3.  **(Optional) Comprehensive Tests:** Implement automated tests covering all tools and edge cases.
+4.  **(Optional) Test Script:** Add a `test` script to `package.json` once a testing framework is chosen.
+5.  **(Optional) Improve Dev Script:** Consider switching from `ts-node` to `tsx` for potentially better performance.
+6.  **(Optional) Implement More Tools:** Consider adding tools for other specific database operations if needed.
+7.  **(Optional) Update Documentation:** Ensure documentation reflects the latest changes, particularly the new 'prompts' capability added in v0.1.8 and the schema inspection prompts.
+8.  **(Optional) Expanded Prompts (Phase 2):** Consider implementing additional prompts for:
+    * Query assistance (templates, explanations)
+    * Database statistics
+    * Graph relationship visualization
+    * Data modeling suggestions
 
 ## Current Status
 
@@ -83,7 +98,8 @@
     *   MCP protocol capabilities have been expanded to include 'prompts'
 *   Server provides a comprehensive baseline of common SurrealDB operations and is well-documented for potential contributors.
 *   Project is published, well-maintained, and ready for use.
-*   Future work is primarily focused on optional improvements like testing and additional tools.
+*   Current focus is on implementing schema inspection prompts to leverage the 'prompts' capability added in v0.1.8.
+*   Future work includes optional improvements like testing and additional tools/prompts.
 
 ## Known Issues
 

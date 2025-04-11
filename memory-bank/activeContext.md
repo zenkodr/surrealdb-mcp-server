@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-*   **Phase 3: Finalization & Publication.** The server has been published to GitHub and npm (currently at version 0.1.8). Focus is now on potential testing implementation and further improvements.
+*   **Phase 3: Finalization & Publication.** The server has been published to GitHub and npm (currently at version 0.1.8). Focus is now on potential testing implementation and further improvements, including implementing schema inspection prompts.
 
 ## Recent Changes
 
@@ -46,9 +46,24 @@
 ## Next Steps
 
 1.  **✅ Create GitHub Releases:** GitHub releases have been created for versions v0.1.2, v0.1.3, v0.1.5, v0.1.6, and v0.1.8.
-2.  **(Optional) Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
-3.  **(Optional) Implement `test` script:** Update `package.json` to run the chosen test framework.
-4.  **(Optional) Update Documentation:** Ensure documentation reflects the latest changes, particularly the new 'prompts' capability added in v0.1.8.
+2.  **Implement Schema Inspection Prompts:** Enhance the server with prompts that provide database structure information:
+    * **Phase 1 Prompts:**
+      * `database_schema` - Provides complete database schema via `INFO FOR DB`
+      * `table_schema` - Returns schema for a specific table via `INFO FOR TABLE <table>`
+      * `list_tables` - Lists all tables in the database
+    * **Implementation Approach:**
+      * Enhance the `ListPromptsRequestSchema` handler to return the available prompts
+      * Implement the `GetPromptRequestSchema` handler to generate prompt content
+      * Execute appropriate SurrealQL queries and return raw results
+      * Format results as context-rich messages for AI assistants
+    * **Expected Benefits:**
+      * Provides AI assistants with database structure information
+      * Enables more accurate query generation and recommendations
+      * Improves user experience by reducing the need for explicit tool calls
+      * Follows industry patterns established by other database MCP servers
+3.  **(Optional) Add Comprehensive Tests:** Implement automated tests covering all tools and edge cases (requires choosing a framework like Jest or Vitest).
+4.  **(Optional) Implement `test` script:** Update `package.json` to run the chosen test framework.
+5.  **(Optional) Update Documentation:** Ensure documentation reflects the latest changes, particularly the new 'prompts' capability added in v0.1.8 and the schema inspection prompts.
 
 ## Active Decisions & Considerations
 
@@ -63,3 +78,8 @@
 *   **SDK Documentation:** Still relevant to consider opening a GitHub issue/PR for `surrealdb.js` SDK documentation regarding the `RecordId` requirement.
 *   **More Advanced Tools:** Consider tools for transactions, schema management, or function execution if needed later.
 *   **Testing Framework:** Need to choose and implement a testing framework (e.g., Jest, Vitest).
+*   **Expanded Prompts (Phase 2):** Consider implementing additional prompts for:
+    * Query assistance (templates, explanations)
+    * Database statistics
+    * Graph relationship visualization
+    * Data modeling suggestions
