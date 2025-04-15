@@ -21,6 +21,32 @@
 *   Requires network access to the target SurrealDB instance from the machine running the MCP server.
 *   The MCP server itself runs non-interactively, so all configuration (like database credentials) must be provided upfront (e.g., via environment variables).
 
+### MCP Test Client
+- Location: D:/dev/ai/my-mcp-servers/mcp-test-client/MCPTestClient/src/MCPTestClient.CLI/MCPTestClient.CLI.csproj
+- Command to test: `dotnet run --project D:/dev/ai/my-mcp-servers/mcp-test-client/MCPTestClient/src/MCPTestClient.CLI/MCPTestClient.CLI.csproj list-all`
+- Configuration in mcpclient.json:
+  ```json
+  {
+    "mcpServers": {
+      "surrealdb": {
+        "command": "node",
+        "args": [
+          "build/index.js"
+        ],
+        "env": {
+          "SURREALDB_URL": "ws://localhost:8000",
+          "SURREALDB_NS": "n8n",
+          "SURREALDB_DB": "AIWorld",
+          "SURREALDB_USER": "root",
+          "SURREALDB_PASS": "root"
+        },
+        "disabled": false,
+        "autoApprove": []
+      }
+    }
+  }
+  ```
+
 ## Dependencies
 
 *   **`surrealdb`:** For all database interactions. Compatibility confirmed with SurrealDB v2.2.2. Connection requires providing `namespace`, `database`, and `auth` (with `username`/`password`) directly in `connect` options.
