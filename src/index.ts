@@ -13,27 +13,9 @@
  * - Creating graph relations between records
  */
 
-import { appendFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
-
-// Create logs directory if it doesn't exist
-const logsDir = join(process.cwd(), 'logs');
-try {
-  mkdirSync(logsDir, { recursive: true });
-} catch {
-  // Ignore error if directory already exists
-}
-
-// Configure log file path
-const logFile = join(logsDir, `surrealdb-mcp-${new Date().toISOString().split('T')[0]}.log`);
-
-// Redirect console.log and console.error to log file
-console.log = (...args) => {
-  appendFileSync(logFile, args.join(' ') + '\n');
-};
-console.error = (...args) => {
-  appendFileSync(logFile, '[ERROR] ' + args.join(' ') + '\n');
-};
+// Redirect console.log and console.error to ensure no logs go to stdout
+console.log = (...args) => process.stderr.write(args.join(' ') + '\n');
+console.error = (...args) => process.stderr.write(args.join(' ') + '\n');
 
 // MCP SDK Imports
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -52,17 +34,15 @@ import {
 import { Surreal, RecordId } from "surrealdb"; // Import RecordId
 import { inspect } from "util";
 
-// Custom logger that writes to file to avoid interfering with JSON-RPC communication
+// Custom logger that writes to stderr to avoid interfering with JSON-RPC communication
 const logger = {
   info: (...args: unknown[]) => {
     const timestamp = new Date().toISOString();
-    const message = `${timestamp} [surrealdb] [info] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`;
-    appendFileSync(logFile, message);
+    process.stderr.write(`${timestamp} [surrealdb] [info] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`);
   },
   error: (...args: unknown[]) => {
     const timestamp = new Date().toISOString();
-    const message = `${timestamp} [surrealdb] [error] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`;
-    appendFileSync(logFile, message);
+    process.stderr.write(`${timestamp} [surrealdb] [error] ${args.map(arg => typeof arg === 'string' ? arg : inspect(arg)).join(' ')}\n`);
   }
 };
 
