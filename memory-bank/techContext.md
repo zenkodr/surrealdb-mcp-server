@@ -46,6 +46,7 @@
     }
   }
   ```
+ - You can test a tool call in this manner: `dotnet run --project D:/dev/ai/my-mcp-servers/mcp-test-client/MCPTestClient/src/MCPTestClient.CLI/MCPTestClient.CLI.csproj call-tool --tool query --params '{"query_string": "INFO FOR DB"}`
 
 ## Dependencies
 
