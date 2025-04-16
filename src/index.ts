@@ -74,7 +74,7 @@ const db = new Surreal();
 const server = new Server(
   {
     name: "surrealdb-mcp-server",
-    version: "0.1.7", // Updated to match current package version
+    version: "0.1.10", // Updated to match current package version
   },
   {
     // Declare tool capability
