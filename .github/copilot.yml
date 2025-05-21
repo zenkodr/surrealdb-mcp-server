@@ -1,0 +1,41 @@
+# GitHub Copilot configuration
+corePrinciples:
+  maintainability: true
+  scalability: true
+  security: true
+codeSuggestions:
+  quality: high
+  security: true
+  typeChecking: strict
+  namingConventions:
+    directory: kebab-case
+    components: PascalCase
+    utilities: camelCase
+    constants: UPPER_SNAKE_CASE
+    types: PascalCase
+  codeOrganization:
+    logicalCohesion: true
+    encapsulation: true
+    dependencyManagement: true
+  technicalDebtManagement:
+    regularRefactoring: true
+    debtTracking: true
+packageManager:
+  name: pnpm
+  pinDependencies: true
+commit:
+  atomic: true
+  messageFormat: conventional
+security:
+  secretStorage: environmentVariables
+  inputValidation: true
+  authentication: true
+  encryption: true
+  logging: true
+devOps:
+  ciCd: true
+  containerization: true
+  monitoring: true
+teamwork:
+  codeReviews: true
+  documentation: true

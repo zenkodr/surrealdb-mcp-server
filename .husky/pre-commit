@@ -1,0 +1,2 @@
+node scripts/lint-rules.js || exit 1
+node scripts/lint-memories.js || exit 1

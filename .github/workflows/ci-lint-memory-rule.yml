@@ -1,0 +1,23 @@
+name: CI Rule & Memory Hygiene
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-memory-rule:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Run rule hygiene check
+        run: node scripts/lint-rules.js
+      - name: Run memory hygiene check
+        run: node scripts/lint-memories.js

@@ -10,19 +10,24 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/surrealdb-mcp-server.git
    cd surrealdb-mcp-server
    ```
+
 3. **Install dependencies**:
+
    ```bash
    npm install
    ```
+
 4. **Set up your development environment** with the required environment variables (see README.md).
 
 ## Development Workflow
 
 1. **Create a new branch** for your feature or bugfix:
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -32,6 +37,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 2. **Make your changes** and ensure they follow the project's coding standards.
 
 3. **Test your changes**:
+
    ```bash
    npm run lint     # Check for code style issues
    npm run format   # Format code according to project standards
@@ -40,11 +46,13 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```
 
 4. **Commit your changes** with a clear and descriptive commit message:
+
    ```bash
    git commit -m "Add feature: description of your changes"
    ```
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
