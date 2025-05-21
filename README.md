@@ -5,50 +5,87 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/surrealdb-mcp-server"><img src="https://img.shields.io/npm/v/surrealdb-mcp-server.svg" alt="npm version"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen" alt="Node.js Version"></a>
   <a href="https://github.com/modelcontextprotocol/typescript-sdk"><img src="https://img.shields.io/badge/MCP%20SDK-%5E1.6.1-orange" alt="MCP SDK"></a>
 </p>
 
-A Model Context Protocol (MCP) server that provides a standardized interface for AI assistants to interact with a [SurrealDB](https://surrealdb.com/) database. This server enables AI systems to query and manipulate data within a configured SurrealDB instance.
+## Project Overview
+
+This repository implements a robust, extensible Model Context Protocol (MCP) server for SurrealDB, inspired by [David Whatley's surrealdb-mcp-server](https://github.com/nsxdavid/surrealdb-mcp-server). It provides a standardized interface for AI assistants and developers to interact with a [SurrealDB](https://surrealdb.com/) instance, enabling seamless querying, mutation, and advanced database operations.
+
+### Documentation & Memory System
+
+> **Source of Truth:**
+> - All architecture, decisions, features, and roadmap items are documented in the `memories/` directory. This directory is the authoritative source for current project state, requirements, and technical context. Update `memories/` after every milestone, refactor, or significant change.
+> - See [`memories/activeContext.md`](memories/activeContext.md), [`memories/features.md`](memories/features.md), [`memories/tasklist.md`](memories/tasklist.md), [`memories/progress.md`](memories/progress.md), [`memories/prd.md`](memories/prd.md), [`memories/techContext.md`](memories/techContext.md), and [`memories/systemPatterns.md`](memories/systemPatterns.md).
 
 > **Note for AI Assistants:** If you are an AI assistant (like Claude, Cline, Copilot, etc.) reading this documentation, please refer to the [llms-install.md](llms-install.md) file for detailed instructions specifically designed for you to help users install and configure this MCP server.
 
 ## Installation Guide
 
-### Which AI assistant are you using?
+### Which AI Assistant or Platform?
 
-- **📝 Using Cline VS Code Extension?** → [Go to Cline Installation](#cline-installation)
-- **🖥️ Using Claude Desktop App?** → [Go to Claude Installation](#claude-installation)
-- **🤖 Using GitHub Copilot in VS Code?** → [Go to Copilot Installation](#copilot-installation)
-- **🦘 Using Roo Code in VS Code?** → [Go to Roo Code Installation](#roo-code-installation)
-- **🌊 Using Windsurf?** → [Go to Windsurf Installation](#windsurf-installation)
-- **⚡ Using Cursor?** → [Go to Cursor Installation](#cursor-installation)
-- **🔄 Using [n8n](https://n8n.io/)?** → [Go to n8n Integration](#integration-with-n8n)
+- **📝 Cline VS Code Extension:** [Cline Installation](#cline-installation)
+- **🖥️ Claude Desktop App:** [Claude Installation](#claude-installation)
+- **🤖 GitHub Copilot:** [Copilot Installation](#copilot-installation)
+- **🦘 Roo Code:** [Roo Code Installation](#roo-code-installation)
+- **🌊 Windsurf:** [Windsurf Installation](#windsurf-installation)
+- **⚡ Cursor:** [Cursor Installation](#cursor-installation)
+- **🔄 [n8n](https://n8n.io/):** [n8n Integration](#integration-with-n8n)
 
-## Key Terms
+---
 
-- **MCP Server**: A server that implements the Model Context Protocol, allowing AI assistants to access external tools and resources
-- **MCP Host**: The application (like VS Code with Cline or Claude Desktop) that connects to MCP servers
-- **[SurrealDB](https://surrealdb.com/)**: A scalable, distributed, document-graph database with real-time capabilities
+## Documentation & Contribution Workflow
 
-## Available Tools
+- **Update `memories/` after every milestone, feature, refactor, or architectural change.**
+- **Reference `memories/` for the latest context, requirements, features, and technical decisions.**
+- **Document all tech debt, issues, and decisions in the appropriate `memories/` file before/after making code changes.**
+- **Keep the README and `memories/` in sync.**
+- **For new contributors:**
+  - Review all `memories/` files before starting work.
+  - Add new features/tasks to `memories/tasklist.md` and `memories/features.md`.
+  - Summarize changes in `memories/progress.md` and decisions in `memories/activeContext.md`.
 
-The server exposes the following tools for interacting with SurrealDB:
+---
 
--   `query`: Execute a raw SurrealQL query.
--   `select`: Select records from a table (all or by specific ID).
--   `create`: Create a single new record in a table.
--   `update`: Update a specific record, replacing its content.
--   `delete`: Delete a specific record by ID.
--   `merge`: Merge data into a specific record (partial update).
--   `patch`: Apply JSON Patch operations to a specific record.
--   `upsert`: Create a record if it doesn't exist, or update it if it does.
--   `insert`: Insert multiple records into a table.
--   `insertRelation`: Create a graph relation (edge) between two records.
+## Key Concepts & Architecture
 
-*(Refer to the MCP host's tool listing for detailed input schemas.)*
+- **MCP Server:** Implements the Model Context Protocol, enabling AI assistants and tools to access SurrealDB via a standardized interface.
+- **Modular Tool Handlers:** Each SurrealDB operation (query, select, create, update, etc.) is implemented as a modular handler in `src/tools/` for maintainability and extensibility.
+- **Type Safety & Validation:** All tool inputs and outputs are statically typed (TypeScript) and will use [arktype](https://github.com/arktypeio/arktype) for runtime validation (see `memories/techContext.md`).
+- **Data Access Layer (DAL):** Planned abstraction to separate DB access, enabling testability and future DB support.
+- **Security:** Environment-driven configuration, input validation, and planned middleware for authentication, permissions, and rate limiting.
+- **Memory System:** All project context, decisions, features, and tech debt are tracked in `memories/` for cross-assistant and team synchronization.
+
+## Supported & Planned Tools
+
+- `query`: Execute raw SurrealQL queries
+- `select`: Select records (all/by ID)
+- `create`: Create a new record
+- `update`: Replace a record
+- `delete`: Delete by ID
+- `merge`: Partial update
+- `patch`: JSON Patch operations
+- `upsert`: Create-or-update
+- `insert`: Bulk insert
+- `insertRelation`: Create graph edge
+
+**Planned:**
+- LIVE SELECT (real-time queries)
+- DEFINE FUNCTION (user-defined functions)
+- Import/export
+- Schema/permission management
+- Advanced authentication (roles, tokens)
+- Graph traversal
+- Variable binding
+- DAL abstraction
+- Static validation (arktype)
+- Comprehensive tests
+- Security event logging
+- CI/CD, containerization
+
+*(See `memories/features.md` and `memories/tasklist.md` for the full roadmap.)*
 
 ## 📝 Cline Installation
 
